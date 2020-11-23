@@ -19,7 +19,7 @@ class CreateSettingsTable extends Migration
 	    $table->integer('user_id')->unsigned()->index();
 	    $table->integer('option1');
 	    $table->integer('option2');
-	    $table->integer('option2');		
+	    $table->integer('option3');		
         });
     }
 
