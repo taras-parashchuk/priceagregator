@@ -18,6 +18,15 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <style>
+        #pleaseWait {
+            visibility: visible;
+        }
+        #spinner1{
+            visibility:hidden;
+        }
+    </style>
+
 </head>
 <body>
 <!-------------------- Navbar --------------------->
@@ -57,7 +66,7 @@
                     Новый прайс
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item"  data-toggle="modal" data-target="#ModalLoadFile" href="#">Загрузить</a>
+                    <a class="dropdown-item"  data-toggle="modal"  data-target="#FileUpload1" href="#">Загрузить</a>
                     <a class="dropdown-item"  data-toggle="modal" data-target="#ModalUploadDatabase" href="#">Обновить базу</a>
                 </div>
             </li>
@@ -91,115 +100,78 @@
 
 
             <!------------------------- Modal Help / Помощь ------------------------------>
-            <div class="modal fade" id="ModalHelp" tabindex="-1" role="dialog" aria-labelledby="ModalHelpLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="ModalHelpLabel">Инструкция</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+<div class="modal fade" id="ModalHelp" tabindex="-1" role="dialog" aria-labelledby="ModalHelpLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalHelpLabel">Инструкция</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mx-5" >
+                    <div class="row my-2">
+                        <div class="col"><span class="badge badge-info">Бренд</span> -> выбор прайса автомобильного бренда с которым желаете работать</div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col"><span class="badge badge-info">Новый прайс</span> -> <span class="badge badge-info">Загрузить</span> Загружает первые 10 записей из файла для просмотра структуры файла.<br>
+                            <span class="badge badge-info">Новый прайс</span> -> <span class="badge badge-info">Обновить</span> Выбор полей которые будут загружены и обновлены в базе. И загрузка прайса.
                         </div>
-                        <div class="modal-body">
-                            <div class="row mx-5" >
-                                <div class="row my-2">
-                                    <div class="col"><span class="badge badge-info">Бренд</span> -> выбор прайса автомобильного бренда с которым желаете работать</div>
-                                </div>
-                                <div class="row my-2">
-                                    <div class="col"><span class="badge badge-info">Новый прайс</span> -> <span class="badge badge-info">Загрузить</span> Загружает первые 10 записей из файла для просмотра структуры файла.<br>
-                                        <span class="badge badge-info">Новый прайс</span> -> <span class="badge badge-info">Обновить</span> Выбор полей которые будут загружены и обновлены в базе. И загрузка прайса.
-                                    </div>
 
-                                </div>
-                                <div class="row my-2">
-                                    <div class="col"><span class="badge badge-info">Редактирование</span> -> <span class="badge badge-info">Обновить запись</span>  Диалоговое окно в котором можно ввести новое значение для записи хранящейся в базе.<br>
-                                        <span class="badge badge-info">Редактирование</span> -> <span class="badge badge-info">Список обновлений</span> Позволяет загрузить файл и обновить группу записей хранящихся в базе.
-                                    </div>
-                                </div>
-                                <div class="row my-2">
-                                    <div class="col"><span class="badge badge-info">Выгрузка</span> Выгрузка прайслиста текущего бренда по одному из шаблонов. Возможность редактирования шаблонов.</div>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col"><span class="badge badge-info">Редактирование</span> -> <span class="badge badge-info">Обновить запись</span>  Диалоговое окно в котором можно ввести новое значение для записи хранящейся в базе.<br>
+                            <span class="badge badge-info">Редактирование</span> -> <span class="badge badge-info">Список обновлений</span> Позволяет загрузить файл и обновить группу записей хранящихся в базе.
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Закрыть</button>
-
-                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col"><span class="badge badge-info">Выгрузка</span> Выгрузка прайслиста текущего бренда по одному из шаблонов. Возможность редактирования шаблонов.</div>
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Закрыть</button>
+
+            </div>
+        </div>
+    </div>
+</div>
 
  <!---------------------------- Modal Load Price / Загрузить прайс------------------------------------->
 
-            <div class="modal fade" id="ModalLoadFile" tabindex="-1" role="dialog" aria-labelledby="ModalLoadFile" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="ModalLoadFile">Загрузка прайса для  {{ Session::get('brand') }}</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+<div class="modal fade" id="FileUpload1" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="FileUpload1label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="FileUpload1label">Загрузка прайса для  {{ Session::get('brand') }}</h5>
+
+
+                <button type="button" class="close" data-dismiss="modal" id="pleaseWait" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('file.upload.post') }}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <div>
+                            @csrf
+                            <input type="file" name="file">
                         </div>
-                        <div class="modal-body">
 
-                                        @if ($message = Session::get('success'))
-                                            <div class="alert alert-success alert-block">
-                                                <button type="button" class="close" data-dismiss="alert">×</button>
-                                                <strong>{{ $message }}</strong>
-                                            </div>
-                                            <p> "spent seconds/{{ Session::get('timespent') }}"</p>
-                                        @endif
-
-                                        @if (count($errors) > 0)
-                                            <div class="alert alert-danger">
-                                                <strong>Whoops!</strong> There were some problems with your input.
-                                                <ul>
-                                                    @foreach ($errors->all() as $error)
-                                                        <li>{{ $error }}</li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                        @endif
-
-                                        <form action="{{ route('file.upload.post') }}" method="POST" enctype="multipart/form-data">
-                                            <div class="row">
-                                              <div class="col">
-                                              @csrf
-                                                 <div>
-                                                    <input type="file" name="file" >
-                                                 </div>
-                                               </div>
-                                            </div>
-                                            <div>
-                                                <input type="hidden" value="brand" name="/edit/bmv">
-                                            </div>
-                                          <!--
-                                            <div class="pt-3">
-                                                <button type="submit" class="btn btn-success">Upload</button>
-                                            </div>
-                                            -->
-                                            <div class="row">
-                                                <div class="col-8">
-                                                </div>
-                                                <div class="col-4 mt-4">
-
-                                                 <button type="submit" class="btn btn-primary">Загрузить</button>
-
-                                                </div>
-                                            </div>
-                                        </form>
-
-
-
-                        </div>
-                        <div class="modal-footer">
-
-                        <!--    <button type="submit" class="btn btn-primary">Загрузить</button> -->
-                        </div>
                     </div>
-                </div>
+
+
+                    <button type="submit" class="btn btn-primary" id="loadprice" type="submit">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner1"></span>
+                        Understood
+                    </button>
+                </form>
             </div>
 
+        </div>
+    </div>
+</div>
 
 
  <!-----------------------------------   Modal Upload to database / Обновить базу ---------------------------------------------->
@@ -208,7 +180,7 @@
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ModalLoadFile">Обновление базы</h5>
+                <h5 class="modal-title" id="ModalLoadFile2">Обновление базы</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -266,7 +238,35 @@
         </div>
     </div>
 </div>
-<div></div>
+
+@if ($message = Session::get('usersuploaded'))
+    <div class="alert alert-success alert-block">
+         <strong>{{ $usersuploaded }}</strong>
+    </div>
+@endif
+
+<div class="row py-3">
+    <div class="col-1 mx-3">
+
+
+        @if (Session::has('brand'))
+            Текущий бренд:  <h4><span class="badge badge-success">{{ Session::get('brand')}}</span></h4>
+        @elseif (Session::has('brand')=="")
+             Бренд не выбран
+
+        @endif
+
+    </div>
+    <div class="col-1 mx-1">
+        @isset($kol)
+           Записей:  {{ $kol ?? '' }}
+        @endisset
+       </div>
+    <div class="col-10 mx-1">
+
+    </div>
+
+</div>
            <!------------------------------- TABS ---------------------------->
 <div class="row">
     <div class="col">
@@ -280,99 +280,148 @@
 
             </ul>
             <div class="tab-content" id="myTabContent">
+
                 <div class="tab-pane fade show active" id="input2" role="tabpanel" aria-labelledby="input2-tab">
-                    <table class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th scope="col">Part number</th>
-                            <th scope="col">Title</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Zalog</th>
-                            <th scope="col">RG</th>
-                            <th scope="col">Zakup</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">152207246532</th>
-                            <td>fraga auto</td>
-                            <td>228.65</td>
-                            <td>16</td>
-                            <td>1</td>
-                            <td>192.07</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">69576082790</th>
-                            <td>undefined</td>
-                            <td>12427530354</td>
-                            <td>28.94</td>
-                            <td>1</td>
-                            <td>28.94</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">52107147991</th>
-                            <td>no name </td>
-                            <td>386.02</td>
-                            <td>16</td>
-                            <td>1</td>
-                            <td>324.26</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="tab-pane fade" id="input1" role="tabpanel" aria-labelledby="input1-tab">
-                    <table class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th scope="col">A</th>
-                            <th scope="col">B</th>
-                            <th scope="col">C</th>
-                            <th scope="col">D</th>
-                            <th scope="col">E</th>
-                            <th scope="col">F</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">51457948739</th>
-                            <td>KRONENMUTTER</td>
-                            <td>53.86</td>
-                            <td>16</td>
-                            <td>1</td>
-                            <td>45.24</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">26789009877665</th>
-                            <td>33321135135</td>
-                            <td>KREUZSCHLITZSCHRAU</td>
-                            <td>146.46</td>
-                            <td>1</td>
-                            <td>123.03</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">82222162886</th>
-                            <td>MONTAGESATZ VISION
-                            </td>
-                            <td>230.25</td>
-                            <td>16</td>
-                            <td>1</td>
-                            <td>193.41</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <!-------------
+                   <table class="table table-bordered">
+                       <thead>
+                       <tr>
+                           <th scope="col">Part number</th>
+                           <th scope="col">Title</th>
+                           <th scope="col">Price</th>
+                           <th scope="col">Zalog</th>
+                           <th scope="col">RG</th>
+                           <th scope="col">Zakup</th>
+                       </tr>
+                       </thead>
+                       <tbody>
+                       <tr>
+                           <th scope="row">152207246532</th>
+                           <td>fraga auto</td>
+                           <td>228.65</td>
+                           <td>16</td>
+                           <td>1</td>
+                           <td>192.07</td>
+                       </tr>
+                       <tr>
+                           <th scope="row">69576082790</th>
+                           <td>undefined</td>
+                           <td>12427530354</td>
+                           <td>28.94</td>
+                           <td>1</td>
+                           <td>28.94</td>
+                       </tr>
+                       <tr>
+                           <th scope="row">52107147991</th>
+                           <td>no name </td>
+                           <td>386.02</td>
+                           <td>16</td>
+                           <td>1</td>
+                           <td>324.26</td>
+                       </tr>
+                       </tbody>
+                   </table>
+                   ------------------>
+                    <div class="container">
+                        @if(! empty($products))
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th scope="col">Part number</th>
+                                <th scope="col">Title</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Zalog</th>
+                                <th scope="col">RG</th>
+                                <th scope="col">Zakup</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+
+
+                           @foreach ($products as $product)
+                               <tr><td>  {{ $product->kod }}</td><td>  {{ $product->price }}</td><td>  {{ $product->zalog }}</td> <td>  {{ $product->rg }}</td>  <td> {{ $product->kod }}<td></td></tr>
+                           @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{ $products->links() }}
+                    @else
+                        I do not have any products
+                    @endif
+
+
+
 
                 </div>
+               <div class="tab-pane fade" id="input1" role="tabpanel" aria-labelledby="input1-tab">
+                   <table class="table table-bordered">
+                       <thead>
+                       <tr>
+                           <th scope="col">A</th>
+                           <th scope="col">B</th>
+                           <th scope="col">C</th>
+                           <th scope="col">D</th>
+                           <th scope="col">E</th>
+                           <th scope="col">F</th>
+                       </tr>
+                       </thead>
+                       <tbody>
+                       <tr>
+                           <th scope="row">51457948739</th>
+                           <td>KRONENMUTTER</td>
+                           <td>53.86</td>
+                           <td>16</td>
+                           <td>1</td>
+                           <td>45.24</td>
+                       </tr>
+                       <tr>
+                           <th scope="row">26789009877665</th>
+                           <td>33321135135</td>
+                           <td>KREUZSCHLITZSCHRAU</td>
+                           <td>146.46</td>
+                           <td>1</td>
+                           <td>123.03</td>
+                       </tr>
+                       <tr>
+                           <th scope="row">82222162886</th>
+                           <td>MONTAGESATZ VISION
+                           </td>
+                           <td>230.25</td>
+                           <td>16</td>
+                           <td>1</td>
+                           <td>193.41</td>
+                       </tr>
+                       </tbody>
+                   </table>
 
-            </div>
-   </div>
+               </div>
+
+           </div>
+  </div>
 </div>
-<div>@if(Session::has('brand'))
-        <div class="alert alert-danger">
-            {{ Session::get('brand')}}
-        </div>
-    @endif </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 
+   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function(){
+    $("#loadprice").click(function(){
+
+            $("#pleaseWait").css("visibility", "hidden");
+            $("#spinner1").css("visibility", "visible");
+         /*   $("#loadprice").attr("disabled", true); */
+        setTimeout(function(){
+            $("#loadprice").attr("disabled", true);
+        }, 2000);
+    });
+    })
+   $("#FileUpload1").on('hidden.bs.modal', function(){
+        $("#loadprice").attr("disabled", false);
+        $("#spinner1").css("visibility", "hidden");
+        $("#pleaseWait").css("visibility", "visible");
+    });
+
+</script>
 </body>
 </html>

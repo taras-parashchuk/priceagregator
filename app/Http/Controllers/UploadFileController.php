@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use DB;
+use Session;
 
 class UploadFileController extends Controller
 {
@@ -49,11 +50,6 @@ class UploadFileController extends Controller
 
         $contents='';
         unset($contents);
-        // $req=$request;
-     //   21522225246 000000190.17 000000000.00 16% *                  1        000000 159.74 0EUR
-     //    21522225246000000190.17000000000.0016%*                     1        000000159.740EUR
-     //   kod tovara     цена
-     //   0-11           12-23         35-37      58-58         69-81
 
 
               $i=0;
@@ -73,9 +69,12 @@ class UploadFileController extends Controller
 
                 if ($max_arrayy>=10000)
                     {
-
-                     DB::table('bmw-temps')->insert($arrayy);
-                     $max_arrayy == 0;
+                        $brand = Session::get('brand');
+                       if ($brand == 'bmw')
+                       {
+                           DB::table('bmw-temps')->insert($arrayy);
+                        }
+                        $max_arrayy == 0;
                      //unset($arrayy);
                        $arrayy =  array();
                     }
