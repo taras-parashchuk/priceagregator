@@ -42,16 +42,7 @@ Route::get('/', function () {
     return view('layouts.layout');
 });
 
-Route::get('/vag', function(Request $request){
-    $request->session()->put('brand', 'vag');
 
-    return view('layouts.layout');
-});
-
-Route::get('/volvo', function(Request $request){
-    $request->session()->put('brand', 'volvo');
-    return view('layouts.layout');
-});
 
 /*
 Route::get('/bmw', function(Request $request){
@@ -61,64 +52,28 @@ Route::get('/bmw', function(Request $request){
 }); */
 Route::get('/bmw','bmw@viewtwenty');
 
+Route::get('/vag', 'vag@viewtwenty');
+Route::get('/volvo', 'volvo@viewtwenty');
+
+Route::get('/daimler', 'daimler@viewtwenty');
+
+Route::get('/fiat', 'fiat@viewtwenty');
+Route::get('/toyota', 'toyota@viewtwenty');
+Route::get('/psa', 'psa@viewtwenty');
+Route::get('/gm', 'gm@viewtwenty');
+Route::get('/hyundai', 'hyundai@viewtwenty');
+Route::get('/mazda', 'mazda@viewtwenty');
+Route::get('/suzuki', 'suzuki@viewtwenty');
+
 /**********************************************************************/
 
-Route::get('/toyota', function(Request $request){
-    $request->session()->put('brand', 'toyota');
-    return view('layouts.layout');
-});
-
-
-Route::get('/psa', function(Request $request){
-    //session(['brand' => 'bmv']);
-    $request->session()->put('brand', 'psa');
-    return view('layouts.layout');
-});
-
-Route::get('/gm', function(Request $request){
-    //session(['brand' => 'bmv']);
-    $request->session()->put('brand', 'gm');
-    return view('layouts.layout');
-});
 
 
 
-Route::get('/daimler', function(Request $request){
-
-    $request->session()->put('brand', 'daimler');
-    return view('layouts.layout');
-});
-
-Route::get('/fiat', function(Request $request){
-
-    $request->session()->put('brand', 'fiat');
-    return view('layouts.layout');
-});
-
-Route::get('/daimler', function(Request $request){
-
-    $request->session()->put('brand', 'daimler');
-    return view('layouts.layout');
-});
-
-Route::get('/hyuidai', function(Request $request){
-
-    $request->session()->put('brand', 'hyuidai');
-    return view('layouts.layout');
-});
-
-Route::get('/mazda', function(Request $request){
-
-    $request->session()->put('brand', 'mazda');
-    return view('layouts.layout');
-});
 
 
-Route::get('/suzuki', function(Request $request){
 
-    $request->session()->put('brand', 'suzuki');
-    return view('layouts.layout');
-});
+
 
 Route::get('/user','usercontroller@import');
 

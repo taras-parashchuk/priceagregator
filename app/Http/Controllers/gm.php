@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class volvo extends Controller
+class gm extends Controller
 {
     public function viewtwenty(Request $request)
     {
-        $request->session()->put('brand', 'VOLVO');
-        $products = DB::table('volvoprices')->paginate(13);
-        $recordscount = DB::table('volvoprices')->count();
+        $request->session()->put('brand', 'GM');
+        //SessionController@storeSessionData;
+        $products = DB::table('gmprices')->paginate(13);
+        $recordscount = DB::table('gmprices')->count();
         return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);
+
     }
 }

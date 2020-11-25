@@ -48,14 +48,14 @@
                     <a class="dropdown-item" href="/vag">VAG</a>
 
                     <a class="dropdown-item" href="/volvo">VOLVO</a>
-                    <a class="dropdown-item" href="/edit">TOYOTA</a>
+                    <a class="dropdown-item" href="/toyota">TOYOTA</a>
                     <a class="dropdown-item" href="/psa">GROUPE PSA</a>
                     <a class="dropdown-item" href="/gm">GENERAL MOTORS</a>
                     <a class="dropdown-item" href="/bmw">BMV</a>
                     <a class="dropdown-item" href="/fiat">FIAT</a>
 
                     <a class="dropdown-item" href="/daimler">DAIMLER</a>
-                    <a class="dropdown-item" href="/hyuidai">HYUNDAI</a>
+                    <a class="dropdown-item" href="/hyundai">HYUNDAI</a>
                     <a class="dropdown-item" href="/mazda">MAZDA</a>
                     <a class="dropdown-item" href="/suzuki">SUZUKI</a>
 
@@ -164,7 +164,7 @@
 
                     <button type="submit" class="btn btn-primary" id="loadprice" type="submit">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner1"></span>
-                        Understood
+                        Загрузить
                     </button>
                 </form>
             </div>
@@ -323,16 +323,18 @@
                    </table>
                    ------------------>
                     <div class="container">
-                        @if(! empty($products))
+                        @if(! empty($products)&& count($products)>0)
                         <table class="table table-bordered">
                             <thead>
                             <tr>
-                                <th scope="col">Part number</th>
+                                <th scope="col">Number</th>
+                                <th scope="col">Number2</th>
+                                <th scope="col">Weight</th>
+                                <th scope="col">VPE</th>
+                                <th scope="col">VIN</th>
+                                <th scope="col">NL</th>
                                 <th scope="col">Title</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Zalog</th>
-                                <th scope="col">RG</th>
-                                <th scope="col">Zakup</th>
+                                <th scope="col">Teileart</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -340,7 +342,7 @@
 
 
                            @foreach ($products as $product)
-                               <tr><td>  {{ $product->kod }}</td><td>  {{ $product->price }}</td><td>  {{ $product->zalog }}</td> <td>  {{ $product->rg }}</td>  <td> {{ $product->kod }}<td></td></tr>
+                               <tr><td>  {{ $product->kod }}</td><td>  {{ $product->price }}</td><td>  {{ $product->zalog }}</td> <td>  {{ $product->rg }}</td>  <td> {{ $product->kod }}<td> <td> {{ $product->kod }}<td></td></tr>
                            @endforeach
                             </tbody>
                         </table>
@@ -348,7 +350,7 @@
 
                     {{ $products->links() }}
                     @else
-                        I do not have any products
+                        <div class="col mt-5" > <h2 class="text-center text-muted">В базе нет записей.</h2></div>
                     @endif
 
 
