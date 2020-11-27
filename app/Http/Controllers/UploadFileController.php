@@ -42,7 +42,7 @@ class UploadFileController extends Controller
          date("H-i")_date("d-m-Y")
          date("d.m.Y")
          */
-        $brand = $request->session()->get('brand');
+
         $path = $request->file->store('prices');
         $contents = Storage::get($path);
        // explode ( string $delimiter , string $string [, int $limit = PHP_INT_MAX ] ) : array
@@ -59,22 +59,24 @@ class UploadFileController extends Controller
         foreach($linesarr as $line)
             {
 
-                $kod=floatval(substr($line,0,11));
+                $NUMBER=substr($line,0,11);
                 $price=floatval(substr($line,12,11));
-                $zalog=floatval(substr($line,35,2));
+                $zalog=floatval(substr($line,35,2));;
                 $rg=floatval(substr($line,57,1));
                 $zakup=floatval(substr($line,69,12));
                 $i++;
-                $arrayy[$i] = compact('kod','price','zalog','rg','zakup',$kod,$price,$zalog,$rg,$zakup);
+                $arrayy[$i] = compact('NUMBER',$NUMBER);
 
                 if ($max_arrayy>=10000)
                     {
                         $brand = Session::get('brand');
-                       if ($brand == 'bmw')
+                       if ($brand == 'BMW')
                        {
-                           DB::table('bmw-temps')->insert($arrayy);
+                           DB::table('bmwprices')->insert($arrayy);
+
                         }
                         $max_arrayy == 0;
+
                      //unset($arrayy);
                        $arrayy =  array();
                     }
@@ -87,7 +89,7 @@ class UploadFileController extends Controller
 
 
             }
-        DB::table('bmw-temps')->insert($arrayy);
+        DB::table('bmwprices')->insert($arrayy);
         //  dd($arrayy);
         $time2 = time();
         $timespent = $time2 - $time1;

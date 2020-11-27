@@ -10,22 +10,21 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
     <style>
-        #pleaseWait {
+        #pleaseWait, #pleaseWait2 {
             visibility: visible;
         }
-        #spinner1{
+        #spinner1, #spinner2{
             visibility:hidden;
         }
-    </style>
+ </style>
 
 </head>
 <body>
@@ -76,7 +75,7 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#ModalRenewRecord">Обновить Запись</a>
-                    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#ModalRenewRecords">Список обновлений</a>
+                    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#ModalRenewRecords">Список изменений</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -99,12 +98,13 @@
 <!-------------------- End Navbar --------------------->
 
 
+
             <!------------------------- Modal Help / Помощь ------------------------------>
 <div class="modal fade" id="ModalHelp" tabindex="-1" role="dialog" aria-labelledby="ModalHelpLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ModalHelpLabel">Инструкция</h5>
+                <h4 class="modal-title" id="ModalHelpLabel">Инструкция</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -112,21 +112,21 @@
             <div class="modal-body">
                 <div class="row mx-5" >
                     <div class="row my-2">
-                        <div class="col"><span class="badge badge-info">Бренд</span> -> выбор прайса автомобильного бренда с которым желаете работать</div>
+                        <div class="col"><h4>Бренд</h4>  Выбор прайса автомобильного бренда с которым желаете работать</div>
                     </div>
                     <div class="row my-2">
-                        <div class="col"><span class="badge badge-info">Новый прайс</span> -> <span class="badge badge-info">Загрузить</span> Загружает первые 10 записей из файла для просмотра структуры файла.<br>
-                            <span class="badge badge-info">Новый прайс</span> -> <span class="badge badge-info">Обновить</span> Выбор полей которые будут загружены и обновлены в базе. И загрузка прайса.
+                        <div class="col"><h4>Новый прайс</h4>  <b>Загрузить -</b> Загружает первые 10 записей из файла для просмотра структуры файла.<br>
+                              <b>Обновить -</b> Выбор полей которые будут загружены и обновлены в базе. И загрузка прайса.
                         </div>
 
                     </div>
                     <div class="row my-2">
-                        <div class="col"><span class="badge badge-info">Редактирование</span> -> <span class="badge badge-info">Обновить запись</span>  Диалоговое окно в котором можно ввести новое значение для записи хранящейся в базе.<br>
-                            <span class="badge badge-info">Редактирование</span> -> <span class="badge badge-info">Список обновлений</span> Позволяет загрузить файл и обновить группу записей хранящихся в базе.
+                        <div class="col"><h4>Редактирование</h4>  <b>Обновить запись -</b>  Диалоговое окно в котором можно ввести новое значение для записи хранящейся в базе.<br>
+                           <b>Список обновлений -</b> Позволяет загрузить файл и обновить группу записей хранящихся в базе.
                         </div>
                     </div>
                     <div class="row my-2">
-                        <div class="col"><span class="badge badge-info">Выгрузка</span> Выгрузка прайслиста текущего бренда по одному из шаблонов. Возможность редактирования шаблонов.</div>
+                        <div class="col"><h4>Выгрузка</h4> Выгрузка прайслиста текущего бренда по одному из шаблонов. Возможность редактирования шаблонов.</div>
                     </div>
                 </div>
             </div>
@@ -138,7 +138,7 @@
     </div>
 </div>
 
- <!---------------------------- Modal Load Price / Загрузить прайс------------------------------------->
+ <!---------------------------- Новый прайс -> Загрузить ------------------------------------->
 
 <div class="modal fade" id="FileUpload1" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="FileUpload1label" aria-hidden="true">
     <div class="modal-dialog">
@@ -161,11 +161,12 @@
 
                     </div>
 
-
-                    <button type="submit" class="btn btn-primary" id="loadprice" type="submit">
+                    <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="loadprice" >
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner1"></span>
                         Загрузить
                     </button>
+                    </div>
                 </form>
             </div>
 
@@ -174,70 +175,306 @@
 </div>
 
 
- <!-----------------------------------   Modal Upload to database / Обновить базу ---------------------------------------------->
 
-<div class="modal fade" id="ModalUploadDatabase" tabindex="-1" role="dialog" aria-labelledby="ModalUploadDatabase" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="ModalLoadFile2">Обновление базы</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
+<!---------------------------------------  Редактирование  ->  Обновить запись   --------------------------------------------------->
 
-            </div>
-            <div class="modal-footer">
-
-                <button type="button" class="btn btn-primary">Загрузить</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!---------------------------------------  Renew Record / Обновить запись в базе   --------------------------------------------------->
 
 <div class="modal fade" id="ModalRenewRecord" tabindex="-1" role="dialog" aria-labelledby="ModalRenewRecord" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-dialog " role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ModalRenewRecord">Обновление записи в базе</h5>
+                <h5 class="modal-title" id="ModalRenewRecordTitle">Обновление записи в базе {{ Session::get('brand') }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
+                <!--    Number	Number2	Weight	VPE	VIN	NL	Title	Teileart -->
+                <form method="POST" action="/update">
+                    @csrf
+                    <div class="row">
+                        <div class="col mr-5">
+                            <div class="row text-right">
+                                <div class="col">
+                                    Number:
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control mb-2" id="Number" name="Number" placeholder="Number"  required>
+                                    <div class="invalid-feedback">
+                                        Пожалуйста введите Number
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    Number2:
+                                </div>
+                                <div class="col text-right">
+                                    <input type="text" class="form-control mb-2" id="Number2" name="Number2" placeholder="Number2">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    Weight:
+                                </div>
+                                <div class="col text-right">
+                                    <input type="text" class="form-control mb-2" id="Weight" name="Weight" placeholder="Weight">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    VPE:
+                                </div>
+                                <div class="col text-right">
+                                    <input type="text" class="form-control mb-2" id="VPE" name="VPE" placeholder="VPE">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    VIN:
+                                </div>
+                                <div class="col text-right">
+                                    <input type="text" class="form-control mb-2" id="VIN" name="VIN" placeholder="VIN">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    NL:
+                                </div>
+                                <div class="col text-right">
+                                    <input type="text" class="form-control mb-2" id="NL" name="NL" placeholder="NL">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    Title:
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control mb-2" id="Title" name="Title" placeholder="Title">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    Teileart:
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control mb-2" id="Teileart" name="Teileart" placeholder="Teileart">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <p class="col">
+                                    <p class="text-muted px-3">Все поля записи с соответствующим номером "Number" заменяются новыми.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
+                        <div class="modal-footer">
+                           <button type="submit" class="btn btn-primary" id="buttonrenewrecord">
+                                   Загрузить
+                           </button>
+                        </div>
+                </form>
             </div>
-            <div class="modal-footer">
 
-                <button type="button" class="btn btn-primary">Загрузить</button>
-            </div>
         </div>
     </div>
 </div>
 
-<!------------------------------------------ Renew Records / Загрузить список изменений ------------------------------------------->
-<div class="modal fade" id="ModalRenewRecords" tabindex="-1" role="dialog" aria-labelledby="ModalRenewRecords" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
+<!-----------------------------------   Новый прайс -> Обновить базу ---------------------------------------------->
+
+<div class="modal fade" id="ModalUploadDatabase" tabindex="-1" role="dialog" aria-labelledby="ModalUploadDatabase" aria-hidden="true">
+    <div class="modal-dialog " role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ModalRenewRecords">Загрузить список изменений в базу</h5>
+                <h5 class="modal-title" id="ModalUploadDatabaseLabel">Обновление записи в базе {{ Session::get('brand') }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-
+                <!--    Number	Number2	Weight	VPE	VIN	NL	Title	Teileart -->
+                <form method="POST" action="/update">
+                    @csrf
+                    <div class="row">
+                        <div class="col mr-5">
+                            <div class="row text-right">
+                                <div class="col">
+                                    Number:
+                                </div>
+                                <div class="col ">
+                                    <input type="text" class="form-control mb-2" id="Number" name="Number" placeholder="Number">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    Number2:
+                                </div>
+                                <div class="col text-right">
+                                    <input type="text" class="form-control mb-2" id="Number2" name="Number2" placeholder="Number2">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    Weight:
+                                </div>
+                                <div class="col text-right">
+                                    <input type="text" class="form-control mb-2" id="Weight" name="Weight" placeholder="Weight">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    VPE:
+                                </div>
+                                <div class="col text-right">
+                                    <input type="text" class="form-control mb-2" id="VPE" name="VPE" placeholder="VPE">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    VIN:
+                                </div>
+                                <div class="col text-right">
+                                    <input type="text" class="form-control mb-2" id="VIN" name="VIN" placeholder="VIN">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    NL:
+                                </div>
+                                <div class="col text-right">
+                                    <input type="text" class="form-control mb-2" id="NL" name="NL" placeholder="NL">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    Title:
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control mb-2" id="Title" name="Title" placeholder="Title">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-right">
+                                    Teileart:
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control mb-2" id="Teileart" name="Teileart" placeholder="Teileart">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-end ">
+                        <div class="col-3 mt-5">
+                            <button type="submit" class="btn btn-primary">Загрузить</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="modal-footer">
 
-                <button type="button" class="btn btn-primary">Загрузить</button>
-            </div>
         </div>
     </div>
 </div>
+<!------------------------------------------ Редактирование / Список изменений ------------------------------------------->
+
+<div class="modal fade " id="ModalRenewRecords" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="ModalRenewRecords" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalRenewRecordslabel">Загрузить список изменений в базу  {{ Session::get('brand') }}</h5>
+
+
+                <button type="button" class="close" data-dismiss="modal" id="pleaseWait2" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('update.records') }}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <div>
+                            @csrf
+                            <div class="row mb-3 px-3 text-muted">
+                                Загрузка файлов только *.xlsx формата<br>
+                                Расположение столбцов в файле должна соответсвовать столбцам в базе.
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col">
+                                    <b>Файл</b>
+                                </div>
+
+                                <div class="col">
+                                    <p class="text-center">  A</p>
+                                </div>
+                                <div class="col">
+                                    <p class="text-center">  B</p>
+                                </div>
+                                <div class="col">
+                                    <p class="text-center">  C</p>
+                                </div>
+                                <div class="col">
+                                    <p class="text-center"> D</p>
+                                </div>
+                                <div class="col">
+                                    <p class="text-center">E</p>
+                                </div>
+                                <div class="col">
+                                    <p class="text-center">F</p>
+                                </div>
+                                <div class="col">
+                                    <p class="text-center">G</p>
+                                </div>
+                                <div class="col">
+                                    <p class="text-center">H</p>
+                                </div>
+                            </div>
+                            <div class="row  mb-4">
+                                <div class="col">
+                                    <b>База</b>
+                                </div>
+                                <div class="col">
+                                    Number
+                                </div>
+                                <div class="col">
+                                    Number2
+                                </div>
+                                <div class="col">
+                                    Weight
+                                </div>
+                                <div class="col">
+                                    VPE
+                                </div>
+                                <div class="col">
+                                    VIN
+                                </div>
+                                <div class="col">
+                                    NL
+                                </div>
+                                <div class="col">
+                                    Title
+                                </div>
+                                <div class="col">
+                                    Teileart
+                                </div>
+                            </div>
+
+                            <input type="file" name="file">
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer ">
+                        <button type="submit" class="btn btn-primary" id="uploadchanges" >
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner2"></span>
+                            Загрузить
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!------------------------------------------------------------------------------------------------------------------------->
 
 @if ($message = Session::get('usersuploaded'))
     <div class="alert alert-success alert-block">
@@ -247,21 +484,22 @@
 
 <div class="row py-3">
     <div class="col-1 mx-3">
-
-
-        @if (Session::has('brand'))
-            Текущий бренд:  <h4><span class="badge badge-success">{{ Session::get('brand')}}</span></h4>
+      @if (Session::has('brand'))
+            <b>Текущий бренд</b>  <h5><span class="badge badge-success">{{ Session::get('brand')}}</span></h5>
         @elseif (Session::has('brand')=="")
-             Бренд не выбран
-
-        @endif
+            <b>Бренд не выбран</b>
+       @endif
 
     </div>
     <div class="col-1 mx-1">
         @isset($kol)
-           Записей:  {{ $kol ?? '' }}
+            <b>Записей:</b> <p id="recordscount"> {{ $kol ?? '' }}</p>
         @endisset
        </div>
+        @if (Session::has('updated'))
+        <b>Изменено: </b> <p  id="changedrecords">{{Session::get('updated')}}</p>
+        @endif
+
     <div class="col-10 mx-1">
 
     </div>
@@ -342,7 +580,14 @@
 
 
                            @foreach ($products as $product)
-                               <tr><td>  {{ $product->kod }}</td><td>  {{ $product->price }}</td><td>  {{ $product->zalog }}</td> <td>  {{ $product->rg }}</td>  <td> {{ $product->kod }}<td> <td> {{ $product->kod }}<td></td></tr>
+           <tr><td>  {{ $product->NUMBER }}</td>
+               <td>  {{ $product->NUMBER2 }}</td>
+               <td>  {{ $product->WEIGHT }}</td>
+               <td>  {{ $product->VPE }}</td>
+               <td> {{ $product->VIN }}</td>
+               <td> {{ $product->NL }}</td>
+               <td>{{ $product->TITLE }}</td>
+               <td>{{ $product->TEILEART }}</td></tr>
                            @endforeach
                             </tbody>
                         </table>
@@ -403,27 +648,117 @@
            </div>
   </div>
 </div>
+<!--------------------- Notification Modal -------------------------->
+<div class="modal"  id="notification" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="notification-header">
+                <h5 class="modal-title p-5" id="notification-title" >Modal title</h5>
+            </div>
+        </div>
+    </div>
+</div>
+<!------------------------------------------------------------------>
+<!--------------------- Notification Toast -------------------------->
 
+
+<div aria-live="polite" aria-atomic="true" class="d-flex justify-content-left align-items-center"  >
+    <div class="toast" style="position: absolute; top: 70px; right: 10px; min-width:300px;height:100px;" data-autohide="true">
+        <div class="toast-header">
+            <strong class="mr-auto" id="toasttitle">Успешно</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+        <div class="toast-body" id="toastbody">
+            Изменена одна запись
+        </div>
+    </div>
+</div>
+
+<!------------------------------------------------------------------->
    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 <script>
     $(document).ready(function(){
+  //---------   Dialog window price uploading  ----------------//
     $("#loadprice").click(function(){
 
-            $("#pleaseWait").css("visibility", "hidden");
-            $("#spinner1").css("visibility", "visible");
-         /*   $("#loadprice").attr("disabled", true); */
-        setTimeout(function(){
-            $("#loadprice").attr("disabled", true);
-        }, 2000);
-    });
-    })
+            $("#pleaseWait").css("visibility", "hidden"); // hide close sign
+            $("#spinner1").css("visibility", "visible");  // show spinner
+            setTimeout(function(){
+            $("#loadprice").attr("disabled", true);       // button disabled after 1 minute
+        }, 1000);
+      });
+        $("#uploadchanges").click(function(){
+            $("#pleaseWait2").css("visibility", "hidden"); // hide close sign
+            $("#spinner2").css("visibility", "visible");  // show spinner
+               setTimeout(function(){
+                $("#uploadchanges").attr("disabled", true);       // button disabled after 1 second
+            }, 1000);
+      });
+
+        $('#ModalRenewRecords').on('shown.bs.modal', function () {
+            let $recordscount = Number($("#recordscount").text());
+            if ($recordscount == 0) {
+                $("#uploadchanges").attr("disabled", true);
+                $('.toast').toast({delay: 5000});
+                $('.toast').toast('show');
+                $("#toasttitle").html("Ошибка. ");
+                $("#toastbody").html(" Записей не найдено");
+                $('.toast').toast('show');
+                               }
+        })
+
+        $('#ModalRenewRecord').on('shown.bs.modal', function () {
+
+            let $recordscount = Number($("#recordscount").text());
+            if ($recordscount == 0) {
+                 console.log("button  renewrecord disabled");
+              $("#buttonrenewrecord").attr("disabled", true);
+              $('.toast').toast({delay: 5000});
+              $('.toast').toast('show');
+              $("#toasttitle").html("Ошибка. ");
+              $("#toastbody").html(" Записей не найдено");
+                // $('#notification').modal('show');
+                $('.toast').toast('show');
+            }
+        })
+
+    });  // End document ready
+
+    // When modal Upload price is hiding return css styles back
    $("#FileUpload1").on('hidden.bs.modal', function(){
         $("#loadprice").attr("disabled", false);
         $("#spinner1").css("visibility", "hidden");
         $("#pleaseWait").css("visibility", "visible");
     });
+  //-----------------------------------------------------------//
+    // When modal Renew records is hiding return css styles back
+        $("#ModalRenewRecords").on('hidden.bs.modal', function(){
+            $("#uploadchanges").attr("disabled", false);
+            $("#spinner2").css("visibility", "hidden");
+            $("#pleaseWait2").css("visibility", "visible");
 
+      });
+    //-----------------------------------------------------------//
+
+
+    window.addEventListener('load', (event) => {
+        //updates made in database notification activate
+        let $changes = Number($("#changedrecords").text());
+
+
+        if ($changes == 1)
+                   {
+                       $('.toast').toast({delay: 3000});
+                       $('.toast').toast('show');
+                       $("#toasttitle").html("Успешно. ");
+                       $("#toastbody").html(" Изменений сделано : " + $changes);
+                      // $('#notification').modal('show');
+                       $('.toast').toast('show');
+                   }
+        });
 </script>
 </body>
 </html>

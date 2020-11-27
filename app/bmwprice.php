@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class bmwprice extends Model
 {
-    //
+    protected $fillable = ['NUMBER','NUMBER2','WEIGHT','VPE','VIN','NL','TITLE','TEILEART'];
 }

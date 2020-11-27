@@ -16,14 +16,14 @@ class CreateVolvopricesTable extends Migration
         Schema::create('volvoprices', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->bigInteger('NUMBER');
-            $table->bigInteger('NUMBER2');
-            $table->integer('WEIGHT');
-            $table->lineString('VPE');
-            $table->lineString('VIN');
-            $table->lineString('NL');
-            $table->lineString('TITLE');
-            $table->lineString('TEILEART');
+            $table->text('NUMBER');
+            $table->text('NUMBER2')->nullable();
+            $table->text('WEIGHT')->nullable();
+            $table->text('VPE')->nullable();
+            $table->text('VIN')->nullable();
+            $table->text('NL')->nullable();
+            $table->text('TITLE')->nullable();
+            $table->text('TEILEART')->nullable();
         });
     }
 

@@ -75,7 +75,7 @@ Route::get('/suzuki', 'suzuki@viewtwenty');
 
 
 
-Route::get('/user','usercontroller@import');
+Route::get('/bmwimp','bmwimportcontroller@import');
 
 /*
 Route::get('/suzuki','SessionController@storeSessionData');
@@ -99,7 +99,8 @@ Route::get('/vag', function(Request $request){
 });
 */
 
-Route::get('file-upload', 'UploadFileController@fileUpload')->name('file.upload');
+
+Route::post('/update','UpdateRecord@update');
+Route::post('/updatemany','UpdateRecord@updatemany')->name('update.records');
+
 Route::post('file-upload', 'UploadFileController@fileUploadPost')->name('file.upload.post');
-
-
