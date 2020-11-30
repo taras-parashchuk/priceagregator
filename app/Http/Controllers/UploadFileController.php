@@ -28,7 +28,7 @@ class UploadFileController extends Controller
          //BMW controller
 
         $request->validate([
-            'file' => 'required|mimes:txt,xls,xlsx,csv',
+            'file' => 'required|mimes:txt,csv',
         ]);
 
         //$ext = time().'.'.$request->file->extension();
@@ -43,7 +43,7 @@ class UploadFileController extends Controller
          date("d.m.Y")
          */
 
-        $path = $request->file->store('prices');
+        $path = $request->file->store('input');
         $contents = Storage::get($path);
        // explode ( string $delimiter , string $string [, int $limit = PHP_INT_MAX ] ) : array
         $linesarr = explode("\r\n",$contents);

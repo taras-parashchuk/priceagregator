@@ -13,9 +13,11 @@ class bmwimportcontroller extends Controller
     {
       // $array = Excel::toArray(new bmwimport, storage_path('/app/public/sample-import.xlsx'));
 
-      $records =   Excel::toArray(new bmwimport, storage_path('/app/public/a_volv.xlsx'));
-      dd($records);
-        return view('layouts.layout')->with('updated', $records);
+        //$result =   Excel::toArray(new bmwimport, storage_path('/app/public/INLAND.xlsx'));
+      $result = Excel::import(new bmwimport,  storage_path('/app/public/INLAND.xlsx'));
+      $records = count($result);
+      return view('layouts.layout')->with('updated', $records);
+
     }
 }
 

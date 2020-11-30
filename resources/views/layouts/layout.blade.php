@@ -389,12 +389,12 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('update.records') }}" method="POST" enctype="multipart/form-data">
+                <form action="/updates" method="POST"  id="uploadchangesform" enctype="multipart/form-data">
                     <div class="form-group">
                         <div>
                             @csrf
                             <div class="row mb-3 px-3 text-muted">
-                                Загрузка файлов только *.xlsx формата<br>
+                                Загрузка файлов только *.csv формата<br>
                                 Расположение столбцов в файле должна соответсвовать столбцам в базе.
                             </div>
                             <div class="row mb-1">
@@ -403,16 +403,16 @@
                                 </div>
 
                                 <div class="col">
-                                    <p class="text-center">  A</p>
+                                    <p class="text-center">A</p>
                                 </div>
                                 <div class="col">
-                                    <p class="text-center">  B</p>
+                                    <p class="text-center">B</p>
                                 </div>
                                 <div class="col">
-                                    <p class="text-center">  C</p>
+                                    <p class="text-center">C</p>
                                 </div>
                                 <div class="col">
-                                    <p class="text-center"> D</p>
+                                    <p class="text-center">D</p>
                                 </div>
                                 <div class="col">
                                     <p class="text-center">E</p>
@@ -457,7 +457,7 @@
                                 </div>
                             </div>
 
-                            <input type="file" name="file">
+                            <input type="file" id="fileupdates" name="fileupdates">
                         </div>
 
                     </div>
@@ -682,59 +682,79 @@
 <script>
     $(document).ready(function(){
   //---------   Dialog window price uploading  ----------------//
-    $("#loadprice").click(function(){
-
+    $("#loadprice").click(function(){                     // Если нажали кнопку загрузить прайс
+                                                          // Деактивируем кнопку, показываем спиннер
             $("#pleaseWait").css("visibility", "hidden"); // hide close sign
             $("#spinner1").css("visibility", "visible");  // show spinner
             setTimeout(function(){
             $("#loadprice").attr("disabled", true);       // button disabled after 1 minute
         }, 1000);
       });
-        $("#uploadchanges").click(function(){
+        $("#uploadchanges").click(function(){              // Когда нажали кнопку Редактирование -> список изменений -> загрузить
             $("#pleaseWait2").css("visibility", "hidden"); // hide close sign
-            $("#spinner2").css("visibility", "visible");  // show spinner
+            $("#spinner2").css("visibility", "visible");   // show spinner
                setTimeout(function(){
                 $("#uploadchanges").attr("disabled", true);       // button disabled after 1 second
             }, 1000);
       });
 
-        $('#ModalRenewRecords').on('shown.bs.modal', function () {
+        $('#ModalRenewRecords').on('shown.bs.modal', function () {    // "редактирование -> список изменений" модальное окно
             let $recordscount = Number($("#recordscount").text());
-            if ($recordscount == 0) {
+            if ($recordscount == 0) {                                 // если записей в базе 0 то деактивируем кнопку, показываем сообщение
                 $("#uploadchanges").attr("disabled", true);
                 $('.toast').toast({delay: 5000});
                 $('.toast').toast('show');
                 $("#toasttitle").html("Ошибка. ");
                 $("#toastbody").html(" Записей не найдено");
                 $('.toast').toast('show');
-                               }
+                                     }
+            if ($('#fileupdates').get(0).files.length === 0)    //  Поле выбора файла
+                    {                                   // если не выбран файл для загрузки, деактивируем кнопку
+                         console.log("не выбран файл для загрузки");
+                         $("#uploadchanges").attr("disabled", true);
+                    } else {
+                // если выбран файл для загрузки, активируем кнопку
+                        console.log("выбран файл для загрузки");
+                        $("#uploadchanges").attr("disabled", false);
+                    }
+             $("#uploadchangesform").change(function() {   // Если Форма "редактирование -> список изменений" изменялась
+               // alert( "Handler for .change() called." );
+                if ($('#fileupdates').get(0).files.length === 0) //  Поле выбора файла
+                  {                                   // если не выбран файл для загрузки, активируем кнопку
+                      console.log("не выбран файл для загрузки");
+                      $("#uploadchanges").attr("disabled", true);
+                  } else {                            // если  выбран файл для загрузки, деактивируем кнопку
+                    console.log("выбран файл для загрузки");
+                    $("#uploadchanges").attr("disabled", false);
+                }
+            });
         })
 
-        $('#ModalRenewRecord').on('shown.bs.modal', function () {
+        $('#ModalRenewRecord').on('shown.bs.modal', function () {   // Редактирование обновить запись
 
             let $recordscount = Number($("#recordscount").text());
-            if ($recordscount == 0) {
+            if ($recordscount == 0) {                               // Если в базе нет записей, деактивируем кнопку, показываем сообщение
                  console.log("button  renewrecord disabled");
-              $("#buttonrenewrecord").attr("disabled", true);
-              $('.toast').toast({delay: 5000});
-              $('.toast').toast('show');
-              $("#toasttitle").html("Ошибка. ");
-              $("#toastbody").html(" Записей не найдено");
+                 $("#buttonrenewrecord").attr("disabled", true);
+                 $('.toast').toast({delay: 5000});
+                 $('.toast').toast('show');
+                 $("#toasttitle").html("Ошибка. ");
+                 $("#toastbody").html(" Записей не найдено");
                 // $('#notification').modal('show');
-                $('.toast').toast('show');
+                  $('.toast').toast('show');
             }
         })
 
     });  // End document ready
 
-    // When modal Upload price is hiding return css styles back
+    // Когда форма новый прайс -> загрузить прячется, возвращаем стили
    $("#FileUpload1").on('hidden.bs.modal', function(){
         $("#loadprice").attr("disabled", false);
         $("#spinner1").css("visibility", "hidden");
         $("#pleaseWait").css("visibility", "visible");
     });
   //-----------------------------------------------------------//
-    // When modal Renew records is hiding return css styles back
+    // Когда форма Редактирование -> список изменений прячется, возвращаем стили
         $("#ModalRenewRecords").on('hidden.bs.modal', function(){
             $("#uploadchanges").attr("disabled", false);
             $("#spinner2").css("visibility", "hidden");
@@ -744,14 +764,13 @@
     //-----------------------------------------------------------//
 
 
-    window.addEventListener('load', (event) => {
+    window.addEventListener('load', (event) => {              // При новой загрузке страницы
         //updates made in database notification activate
-        let $changes = Number($("#changedrecords").text());
-
+        let $changes = Number($("#changedrecords").text());   // читаем в переменную сколько изменений сделано
 
         if ($changes == 1)
                    {
-                       $('.toast').toast({delay: 3000});
+                       $('.toast').toast({delay: 3000});      // показываем всплывающее окно с количеством изменений
                        $('.toast').toast('show');
                        $("#toasttitle").html("Успешно. ");
                        $("#toastbody").html(" Изменений сделано : " + $changes);

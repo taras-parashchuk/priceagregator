@@ -17,13 +17,15 @@ use Illuminate\Support\Str;
 |
 */
 
-$factory->define(vagpice::class, function (Faker $faker) {
+$factory->define(vagprice::class, function (Faker $faker) {
     return [
-        'NUMBER' => $faker->numbers,
-        'NUMBER2' => $faker->numbers,
-        'WEIGHT' => numbers,
-        'VPE' =>  numbers,
-        'TITLE' => text,
-      
+        'NUMBER' => $faker->unique()->randomNumber,
+        'NUMBER2' => $faker->randomNumber,
+        'WEIGHT' => $faker->numberBetween(1,200),
+        'VIN' => $faker->randomDigit,
+        'NL' => $faker->randomDigit,  
+        'VPE' =>  $faker->randomLetter,
+        'TITLE' => $faker->sentence(2, true),
+        'TEILEART' => $faker->sentence(2)
     ];
 });
