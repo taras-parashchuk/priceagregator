@@ -21,6 +21,7 @@ USE App\hyundaiprice;
 USE App\mazdaprice;
 USE App\suzukiprice;
 use App\File;
+USE App\table;
 
 class UpdateRecord extends Controller
 {
@@ -72,14 +73,16 @@ class UpdateRecord extends Controller
                 $record = suzukiprice::where('NUMBER', $Number)->update(['NUMBER2' => $Number2, 'WEIGHT' => $Weight, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $Title, 'TEILEART' => $Teileart]);
             }
 
-
-         return back()->with('updated', $record);
-    }
+             if ($record > 0) { $errors = 0; } else { $errors = 1;}
+         return back()->with(['updated'=> $record,'refused'=>$errors]);
+                      }
 
 
         public function updatemany(Request $request)
           {
               $brand = Session::get('brand');
+              $errmsg =array();
+              $refused =0;
 
          if($request->hasFile('fileupdates'))
 
@@ -119,97 +122,166 @@ class UpdateRecord extends Controller
 
 
                   reset($csvarr);
+                  if ($brand == "VAG") {$tableprice = 'vagprices'; }
+                  if ($brand == "BMW") {$tableprice = 'bmwprices'; }
+                  if ($brand == "DAIMLER") { $tableprice= 'daimlerprices';  }
+                  if ($brand == "FIAT") { $tableprice = 'fiatprices'; }
+                  if ($brand == "GM") { $tableprice = 'gmprices'; }
+                  if ($brand == "HYUNDAI") { $tableprice = 'hyundaiprices'; }
+                  if ($brand == "MAZDA") { $tableprice = 'mazdaprices';  }
+                  if ($brand == "PSA") {$tableprice = 'psaprices';  }
+                  if ($brand == "SUZUKI") {$tableprice = 'suzukiprices';  }
+                  if ($brand == "TOYOTA") {$tableprice = 'toyotaprices'; }
+                  if ($brand == "VOLVO") {$tableprice = 'volvoprices' ; }
 
-                   $updated = 0;
+            //  dd($table);
 
-                  foreach ($csvarr as $arr)
-                            {
-                                if (isset($arr[0]))   { $NUMBER  =  $arr[0];} else {$NUMBER = " ";}
-                                if (isset($arr[1]))   { $NUMBER2 =  $arr[1]; } else {$NUMBER2 = " ";}
-                                if (isset($arr[2]))   { $WEIGHT =  $arr[2]; } else { $WEIGHT = " ";}
-                                if (isset($arr[3]))   { $VPE =  $arr[3]; } else {$VPE = " ";}
-                                if (isset($arr[4]))   { $VIN =  $arr[4]; } else {$VIN = " ";}
-                                if (isset($arr[5]))   { $NL =  $arr[5]; } else { $NL = " ";}
-                                if (isset($arr[6]))   { $TITLE =  $arr[6]; } else { $TITLE = " ";}
-                                if (isset($arr[7]))   { $TEILEART =  $arr[7]; } else { $TEILEART = " ";}
+                    // Блокуємо таблиці
+                  $block = table::find($tableprice);
+                  $blocked = $block->status;
 
-                                 $NUMBER =  preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $NUMBER);
-                                 $NUMBER = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/u', '', $NUMBER);
+                  if ($blocked == 0) {
 
-                                 $NUMBER2 =  preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $NUMBER2);
-                                 $WEIGHT  =  preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $WEIGHT);
-                                 $VPE     =  preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $VPE);
-                                 $VIN     =  preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $VIN);
-                                 $NL      =  preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $NL);
-                                 $TITLE   =  preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $TITLE);
-                                 $TEILEART=  preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $TEILEART);
+                      $block->status = 1;  //Ставимо блок на таблицю
+                      $block->save();
+                      $updated = 0;
+                      $errors = 0;
 
-                                 /*
-                                 $reсord = vagprice::find($NUMBER);
-                                 $reсord->NUMBER2 = $NUMBER2;
-                                 $reсord->WEIGHT  = $WEIGHT;
-                                 $reсord->VPE     = $VPE;
-                                 $reсord->VIN     = $VIN;
-                                 $reсord->NL      = $NL;
-                                 $reсord->TITLE   = $TITLE;
-                                 $reсord->TEILEART= $TEILEART;
-                                 $reсord->save();
-                                */
-                                if ($brand == "VAG") {
-                                    $record = vagprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                       $updated = $updated + $record;
-                                }
-                                if ($brand == "VOLVO") {
-                                    $record = volvoprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                    $updated = $updated + $record;
-                                }
-                                if ($brand == "TOYOTA") {
-                                    $record = toyotaprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                    $updated = $updated + $record;
-                                }
-                                if ($brand == "PSA") {
-                                    $record = psaprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                    $updated = $updated + $record;
-                                }
-                                if ($brand == "GM") {
-                                    $record = gmprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                    $updated = $updated + $record;
-                                }
-                                if ($brand == "BMW") {
-                                    $record = bmwprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                    $updated = $updated + $record;
-                                }
-                                if ($brand == "FIAT") {
-                                    $record = fiatprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                    $updated = $updated + $record;
-                                }
-                                if ($brand == "DAIMLER") {
-                                    $record = daimlerprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                    $updated = $updated + $record;
-                                }
-                                if ($brand == "HYUNDAI") {
-                                    $record = hyundaiprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                    $updated = $updated + $record;
-                                }
-                                if ($brand == "MAZDA") {
-                                    $record = mazdaprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                    $updated = $updated + $record;
-                                }
-                                if ($brand == "SUZUKI") {
-                                    $record = suzukiprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
-                                    $updated = $updated + $record;
-                                }
-                            }
+                      // Пишемо рядки в базу
+                      foreach ($csvarr as $arr) {
+                          if (isset($arr[0])) {$NUMBER = $arr[0]; } else { $NUMBER = " "; }
+                          if (isset($arr[1])) {$NUMBER2 = $arr[1];} else { $NUMBER2 = " ";}
+                          if (isset($arr[2])) {$WEIGHT = $arr[2]; } else { $WEIGHT = " "; }
+                          if (isset($arr[3])) {$VPE = $arr[3];    } else {  $VPE = " ";   }
+                          if (isset($arr[4])) {$VIN = $arr[4];    } else { $VIN = " ";    }
+                          if (isset($arr[5])) {$NL = $arr[5];     } else { $NL = " ";     }
+                          if (isset($arr[6])) {$TITLE = $arr[6];  } else { $TITLE = " ";  }
+                          if (isset($arr[7])) {$TEILEART = $arr[7];} else {$TEILEART = " ";}
+
+                          $NUMBER = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $NUMBER);
+                          $NUMBER = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/u', '', $NUMBER);
+
+                          $NUMBER2 = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $NUMBER2);
+                          $WEIGHT = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $WEIGHT);
+                          $VPE = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $VPE);
+                          $VIN = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $VIN);
+                          $NL = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $NL);
+                          $TITLE = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $TITLE);
+                          $TEILEART = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $TEILEART);
+
+                          /*
+                          $reсord = vagprice::find($NUMBER);
+                          $reсord->NUMBER2 = $NUMBER2;
+                          $reсord->WEIGHT  = $WEIGHT;
+                          $reсord->VPE     = $VPE;
+                          $reсord->VIN     = $VIN;
+                          $reсord->NL      = $NL;
+                          $reсord->TITLE   = $TITLE;
+                          $reсord->TEILEART= $TEILEART;
+                          $reсord->save();
+                         */
 
 
-                 } else  {
-                    return "die";
+                          //$brand = 'VAG';
+
+                          if ($brand == "VAG") {
+
+                              $record = vagprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found';
+                              }
+                          }
+                          if ($brand == "VOLVO") {
+                              $record = volvoprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found' ;
+                              }
+                          }
+                          if ($brand == "TOYOTA") {
+                              $record = toyotaprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found' ;
+                              }
+                          }
+                          if ($brand == "PSA") {
+                              $record = psaprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found' ;
+                              }
+                          }
+                          if ($brand == "GM") {
+                              $record = gmprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found' ;
+                              }
+                          }
+                          if ($brand == "BMW") {
+                              $record = bmwprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found' ;
+                              }
+                          }
+                          if ($brand == "FIAT") {
+                              $record = fiatprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found' ;
+                              }
+                          }
+                          if ($brand == "DAIMLER") {
+                              $record = daimlerprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found' ;
+                              }
+                          }
+                          if ($brand == "HYUNDAI") {
+                              $record = hyundaiprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found' ;
+                              }
+                          }
+                          if ($brand == "MAZDA") {
+                              $record = mazdaprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found' ;
+                              }
+                          }
+                          if ($brand == "SUZUKI") {
+                              $record = suzukiprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
+                              $updated = $updated + $record;
+                              if ($record == 0) {
+                                  $refused++;
+                                  $errmsg[]=strval($NUMBER) . ' not found' ;
+                              }
+                          }
+                      }
+                  }
+                  $block->status = 0;  // Знімаємо блок з таблиці
+                  $block->save();
+              } else  {
+                    return  back()->with('errors',"No file uploaded");
                          }
-              //$record = 96;
-              //return view('layouts.layout')->with('updated', $record);
-              //return back()->with(["updated"=>$updated,"total"=>$totalrec]);
-              //return back()->with(["updated"=>$updated,"total"=>$totalrec]);
-              return back()->with(['updated'=> $updated,'total'=> $totalrec]);
+
+              return back()->with(['updated'=> $updated,'total'=> $totalrec,'refused'=> $refused ]);
           }
 
 

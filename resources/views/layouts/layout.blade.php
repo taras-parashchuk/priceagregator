@@ -25,7 +25,13 @@
             visibility:hidden;
         }
  </style>
+ <script>
 
+    $changes = {{ Session::get('updated') }}
+    $total =   {{ Session::get('total') }}
+    $refused =  {{ Session::get('refused') }}
+
+ </script>
 </head>
 <body>
 <!-------------------- Navbar --------------------->
@@ -663,15 +669,15 @@
 
 
 <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-left align-items-center"  >
-    <div class="toast" style="position: absolute; top: 70px; right: 10px; min-width:300px;height:100px;" data-autohide="true">
+    <div class="toast" style="position: absolute; top: 70px; right: 10px; min-width:300px;height:130px;" data-autohide="true">
         <div class="toast-header">
-            <strong class="mr-auto" id="toasttitle">Успешно</strong>
+            <strong class="mr-auto" id="toasttitle">AHTUNG</strong>
             <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
          </div>
         <div class="toast-body" id="toastbody">
-            Изменена одна запись
+            FASCISTEN STRELIERT
         </div>
     </div>
 </div>
@@ -681,6 +687,8 @@
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 <script>
     $(document).ready(function(){
+
+      //  alert($changes); спрацьовує
   //---------   Dialog window price uploading  ----------------//
   //  FileUpload1 -- modal id ; uploadpricefile -- форма выбора файла
         $('#FileUpload1').on('shown.bs.modal', function()
@@ -734,7 +742,7 @@
                 $("#uploadchanges").attr("disabled", true);
                 $("#fileupdates").attr("disabled",true);
                 $('.toast').toast({delay: 5000});
-                $('.toast').toast('show');
+               // $('.toast').toast('show');
                 $("#toasttitle").html("Ошибка. ");
                 $("#toastbody").html(" Записей не найдено");
                 $('.toast').toast('show');
@@ -797,17 +805,29 @@
 
     window.addEventListener('load', (event) => {              // При новой загрузке страницы
         //updates made in database notification activate
-        let $changes = Number($("#changedrecords").text());   // читаем в переменную сколько изменений сделано
+      //  let $changes = Number($("#changedrecords").text());   // читаем в переменную сколько изменений сделано
+     //   alert($changes);
+       // alert($errors);
 
-        if ($changes > 0)
-                   {
+
                        $('.toast').toast({delay: 5000});      // показываем всплывающее окно с количеством изменений
-                       $('.toast').toast('show');
-                       $("#toasttitle").html("Успешно. ");
-                       $("#toastbody").html(" Изменений сделано : " + $changes);
+                      // $('.toast').toast('show');
+
+                       if ($refused > 0) {
+                          $("#toasttitle").html("Не совсем успешно. ");
+                           // alert($refused);
+                          $("#toastbody").html(" Изменений сделано : " + $changes + "<br>Всего строк: "+ $total + "<p>Ошибок: " + $refused+"</p>");
+
+                                        } else
+                                            {
+                                   $("#toasttitle").html("Успешно. ");
+
+                                   $("#toastbody").html(" Изменений сделано : " + $changes + "<p>Ошибок: " + $refused+"</p>");
+                                            }
+
                       // $('#notification').modal('show');
                        $('.toast').toast('show');
-                   }
+
         });
 </script>
 </body>
