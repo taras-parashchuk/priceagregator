@@ -38,7 +38,23 @@ return view('layouts.layout');
 });
 */
 
-Route::get('/', function () {
+Route::get('/', function (Request $request) {
+
+    $brand = $request->session()->get('brand');
+
+    if ($brand = "BMW")    { return redirect('/bmw'); }
+    if ($brand = "VAG")    { return redirect('/vag'); }
+    if ($brand = "VOLVO")  { return redirect('/volvo'); }
+    if ($brand = "daimler"){ return redirect('/daimler');}
+    if ($brand = "FIAT"){ return redirect('/fiat');}
+
+    if ($brand = "TOYOTA"){ return redirect('/toyota');}
+    if ($brand = "PSA"){ return redirect('/psa');}
+    if ($brand = "GM"){ return redirect('/gm');}
+    if ($brand = "HYUNDAI"){ return redirect('/hyundai');}
+    if ($brand = "MAZDA"){ return redirect('/mazda');}
+    if ($brand = "SUZUKI"){ return redirect('/suzuki');}
+
     return view('layouts.layout');
 });
 

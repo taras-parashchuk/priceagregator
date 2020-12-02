@@ -92,7 +92,7 @@ class vagimportcontroller extends Controller
      //   dd(count($bb));
 
         $qu = array_column($aa, null, 'NUMBER');
-        dd($qu);
+      //  dd($qu);
 
         $aa = array_values(array_column($aa, null, 'NUMBER'));
 

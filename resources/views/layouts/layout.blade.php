@@ -152,11 +152,11 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('file.upload.post') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('file.upload.post') }}" method="POST" id="uploadpriceform" enctype="multipart/form-data">
                     <div class="form-group">
                         <div>
                             @csrf
-                            <input type="file" name="file">
+                            <input type="file" name="file" id="uploadpricefile">
                         </div>
 
                     </div>
@@ -271,7 +271,7 @@
 
                         <div class="modal-footer">
                            <button type="submit" class="btn btn-primary" id="buttonrenewrecord">
-                                   Загрузить
+                                   Обновить
                            </button>
                         </div>
                 </form>
@@ -682,7 +682,37 @@
 <script>
     $(document).ready(function(){
   //---------   Dialog window price uploading  ----------------//
-    $("#loadprice").click(function(){                     // Если нажали кнопку загрузить прайс
+  //  FileUpload1 -- modal id ; uploadpricefile -- форма выбора файла
+        $('#FileUpload1').on('shown.bs.modal', function()
+           {
+
+               if ($('#uploadpricefile').get(0).files.length === 0)    //  Поле выбора файла
+               {      // если не выбран файл для загрузки, деактивируем кнопку
+                   console.log("не выбран файл для загрузки");
+                   $("#loadprice").attr("disabled", true);
+               } else {
+                   // если выбран файл для загрузки, активируем кнопку
+                   console.log("выбран файл для загрузки");
+                   $("#loadprice").attr("disabled", false);
+               }
+
+             $('#FileUpload1').change(function()    //форма изменилась, проверяем файл ли файл
+                         {
+
+                             if ($('#uploadpricefile').get(0).files.length === 0)    //  Поле выбора файла
+                             {      // если не выбран файл для загрузки, деактивируем кнопку
+                                 console.log("не выбран файл для загрузки");
+                                 $("#loadprice").attr("disabled", true);
+                             } else {
+                                 // если выбран файл для загрузки, активируем кнопку
+                                 console.log("выбран файл для загрузки");
+                                 $("#loadprice").attr("disabled", false);
+                             }
+                          })
+                 })
+
+
+            $("#loadprice").click(function(){                     // Если нажали кнопку загрузить прайс
                                                           // Деактивируем кнопку, показываем спиннер
             $("#pleaseWait").css("visibility", "hidden"); // hide close sign
             $("#spinner1").css("visibility", "visible");  // show spinner
@@ -702,6 +732,7 @@
             let $recordscount = Number($("#recordscount").text());
             if ($recordscount == 0) {                                 // если записей в базе 0 то деактивируем кнопку, показываем сообщение
                 $("#uploadchanges").attr("disabled", true);
+                $("#fileupdates").attr("disabled",true);
                 $('.toast').toast({delay: 5000});
                 $('.toast').toast('show');
                 $("#toasttitle").html("Ошибка. ");
@@ -709,7 +740,7 @@
                 $('.toast').toast('show');
                                      }
             if ($('#fileupdates').get(0).files.length === 0)    //  Поле выбора файла
-                    {                                   // если не выбран файл для загрузки, деактивируем кнопку
+                    {      // если не выбран файл для загрузки, деактивируем кнопку
                          console.log("не выбран файл для загрузки");
                          $("#uploadchanges").attr("disabled", true);
                     } else {
@@ -747,14 +778,14 @@
 
     });  // End document ready
 
-    // Когда форма новый прайс -> загрузить прячется, возвращаем стили
+    // Когда форма "новый прайс -> загрузить прячется", возвращаем стили
    $("#FileUpload1").on('hidden.bs.modal', function(){
         $("#loadprice").attr("disabled", false);
         $("#spinner1").css("visibility", "hidden");
         $("#pleaseWait").css("visibility", "visible");
     });
   //-----------------------------------------------------------//
-    // Когда форма Редактирование -> список изменений прячется, возвращаем стили
+    // Когда форма "Редактирование -> список изменений" прячется, возвращаем стили
         $("#ModalRenewRecords").on('hidden.bs.modal', function(){
             $("#uploadchanges").attr("disabled", false);
             $("#spinner2").css("visibility", "hidden");
@@ -768,9 +799,9 @@
         //updates made in database notification activate
         let $changes = Number($("#changedrecords").text());   // читаем в переменную сколько изменений сделано
 
-        if ($changes == 1)
+        if ($changes > 0)
                    {
-                       $('.toast').toast({delay: 3000});      // показываем всплывающее окно с количеством изменений
+                       $('.toast').toast({delay: 5000});      // показываем всплывающее окно с количеством изменений
                        $('.toast').toast('show');
                        $("#toasttitle").html("Успешно. ");
                        $("#toastbody").html(" Изменений сделано : " + $changes);
