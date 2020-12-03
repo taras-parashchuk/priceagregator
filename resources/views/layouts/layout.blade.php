@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel') }} @yield('title')</title>
 
     <!-- Scripts -->
 
@@ -36,6 +36,7 @@
 </head>
 <body>
 <!-------------------- Navbar --------------------->
+@section('navbar')
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Auto House</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,6 +94,7 @@
                     <a class="dropdown-item" href="#">Шаблон 1</a>
                     <a class="dropdown-item" href="#">Шаблон 2</a>
                     <a class="dropdown-item" href="#">Шаблон 3</a>
+                    <a class="dropdown-item" href="/dwbase">Выгрузить базу</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -100,10 +102,10 @@
                     Настройки
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" data-toggle="modal"  data-target="#LogModal" href="#">Просмотр лога</a>
-                    <a class="dropdown-item" data-toggle="modal" data-target="#delInputFiles" href="#">Удалить входные файлы</a>
-                    <a class="dropdown-item" data-toggle="modal"  data-target="#delOutputFiles" href="#">Удалить выходные файлы</a>
-                </div>
+                    <!-----  data-toggle="modal"  data-target="#LogModal" --->
+                    <a class="dropdown-item" href="/log">Просмотр лога</a>
+                    <a class="dropdown-item" href="/files">Просмотр файлов</a>
+                   </div>
             </li>
             <li class="nav-item">
                 <a class="nav-link"  data-toggle="modal" data-target="#ModalHelp" href="#">Помощь</a>
@@ -112,6 +114,7 @@
 
     </div>
 </nav>
+@show
 <!-------------------- End Navbar --------------------->
 
 
@@ -548,6 +551,7 @@
     </div>
 
 </div>
+@section('content')
            <!------------------------------- TABS ---------------------------->
 <div class="row">
     <div class="col">
@@ -691,6 +695,7 @@
            </div>
   </div>
 </div>
+           @show
 <!--------------------- Notification Delete input files -------------------------->
 <div class="modal" id="delInputFiles" tabindex="-1">
     <div class="modal-dialog">

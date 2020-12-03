@@ -22,6 +22,7 @@ USE App\mazdaprice;
 USE App\suzukiprice;
 use App\File;
 USE App\table;
+USE App\log;
 
 class UpdateRecord extends Controller
 {
@@ -37,6 +38,8 @@ class UpdateRecord extends Controller
         $Title=$request->input('Title');
         $Teileart=$request->input('Teileart');
 
+        $errmsg = array();
+
         if ($brand == "VAG") {$tableprice = 'vagprices'; }
         if ($brand == "BMW") {$tableprice = 'bmwprices'; }
         if ($brand == "DAIMLER") { $tableprice= 'daimlerprices';  }
@@ -49,7 +52,7 @@ class UpdateRecord extends Controller
         if ($brand == "TOYOTA") {$tableprice = 'toyotaprices'; }
         if ($brand == "VOLVO") {$tableprice = 'volvoprices' ; }
 
-        $errmsg = array();
+
         // Блокуємо таблиці
         $block = table::find($tableprice);
         $blocked = $block->status;
@@ -97,6 +100,18 @@ class UpdateRecord extends Controller
         $block->status = 0;  // Знімаємо блок з таблиці
         $block->save();
 
+        if ($record > 0 ) { $message ="Record successfully updated"; $status= 'success';}
+                         else {$message = "Record not found"; $status= 'error';}
+
+        $logg = new log;
+        $logg->brand  =  $brand;
+        $logg->action =  'update';
+        $logg->number =  $Number;
+        $logg->status =  $status;
+        $logg->message = $message;
+        $logg->save();
+
+
              if ($record > 0) { $errors = 0; } else { $errors = 1;}
          return back()->with(['updated'=> $record,'total'=>1,'refused'=>$errors,'errmsg'=>$errmsg]);
                       }
@@ -137,7 +152,19 @@ class UpdateRecord extends Controller
                                               }
                       $i++;
                   }
-                  if (count($csvarr[1]) <> 8) { $csvarr = array(); $errmsg[] =" File not supported. Must be in CSV format,semicolon separated, 8 columns";}
+
+                  if (count($csvarr[1]) <> 8) {
+                      $csvarr = array();
+
+                      $logg = new log;
+                      $logg->brand  =  $brand;
+                      $logg->action =  'update';
+                      $logg->status =  'error';
+                      $logg->number =  "";
+                      $logg->message = "File must be in CSV format, semicolon separated, 8 columns.";
+                      $logg->save();
+                      $errmsg[] =  "File must be in CSV format, semicolon separated, 8 columns.";
+                  }
 
                   $totalrec = count($csvarr);
 
@@ -163,6 +190,9 @@ class UpdateRecord extends Controller
                     // Блокуємо таблиці
                   $block = table::find($tableprice);
                   $blocked = $block->status;
+
+                  $errmsg = array();
+                  $success =array();
 
                   if ($blocked == 0) {
 
@@ -214,80 +244,80 @@ class UpdateRecord extends Controller
                               $updated = $updated + $record;
                               if ($record == 0) {
                                   $refused++;
-                                  $errmsg[]=strval($NUMBER) . ' not found';
-                              }
+                                  $errmsg[]=strval($NUMBER);
+                              } else {$success[] = $NUMBER;}
                           }
                           if ($brand == "VOLVO") {
                               $record = volvoprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
                               $updated = $updated + $record;
                               if ($record == 0) {
                                   $refused++;
-                                  $errmsg[]=strval($NUMBER) . ' not found' ;
-                              }
+                                  $errmsg[]=strval($NUMBER);
+                              } else {$success[] =$NUMBER;}
                           }
                           if ($brand == "TOYOTA") {
                               $record = toyotaprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
                               $updated = $updated + $record;
                               if ($record == 0) {
                                   $refused++;
-                                  $errmsg[]=strval($NUMBER) . ' not found' ;
-                              }
+                                  $errmsg[]=strval($NUMBER);
+                              }  else {$success[] =$NUMBER;}
                           }
                           if ($brand == "PSA") {
                               $record = psaprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
                               $updated = $updated + $record;
                               if ($record == 0) {
                                   $refused++;
-                                  $errmsg[]=strval($NUMBER) . ' not found' ;
-                              }
+                                  $errmsg[]=strval($NUMBER);
+                              }  else {$success[] =$NUMBER;}
                           }
                           if ($brand == "GM") {
                               $record = gmprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
                               $updated = $updated + $record;
                               if ($record == 0) {
                                   $refused++;
-                                  $errmsg[]=strval($NUMBER) . ' not found' ;
-                              }
+                                  $errmsg[]=strval($NUMBER);
+                              }   else {$success[] =$NUMBER;}
                           }
                           if ($brand == "BMW") {
                               $record = bmwprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
                               $updated = $updated + $record;
                               if ($record == 0) {
                                   $refused++;
-                                  $errmsg[]=strval($NUMBER) . ' not found' ;
-                              }
+                                  $errmsg[]=strval($NUMBER);
+                              }  else {$success[] =$NUMBER;}
                           }
                           if ($brand == "FIAT") {
                               $record = fiatprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
                               $updated = $updated + $record;
                               if ($record == 0) {
                                   $refused++;
-                                  $errmsg[]=strval($NUMBER) . ' not found' ;
-                              }
+                                  $errmsg[]=strval($NUMBER);
+                              }  else {$success[] =$NUMBER;}
                           }
                           if ($brand == "DAIMLER") {
                               $record = daimlerprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
                               $updated = $updated + $record;
                               if ($record == 0) {
                                   $refused++;
-                                  $errmsg[]=strval($NUMBER) . ' not found' ;
-                              }
+                                  $errmsg[]=strval($NUMBER);
+                              }  else {$success[] =$NUMBER;}
                           }
                           if ($brand == "HYUNDAI") {
                               $record = hyundaiprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
                               $updated = $updated + $record;
                               if ($record == 0) {
                                   $refused++;
-                                  $errmsg[]=strval($NUMBER) . ' not found' ;
-                              }
+                                  $errmsg[]=strval($NUMBER);
+                              }   else {$success[] =$NUMBER;}
                           }
                           if ($brand == "MAZDA") {
                               $record = mazdaprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
                               $updated = $updated + $record;
                               if ($record == 0) {
                                   $refused++;
-                                  $errmsg[]=strval($NUMBER) . ' not found' ;
-                              }
+                                  $errmsg[]=strval($NUMBER);
+                              }   else {$success[] =$NUMBER;}
                           }
                           if ($brand == "SUZUKI") {
                               $record = suzukiprice::where('NUMBER', $NUMBER)->update(['NUMBER2' => $NUMBER2, 'WEIGHT' => $WEIGHT, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $TITLE, 'TEILEART' => $TEILEART]);
@@ -295,15 +325,36 @@ class UpdateRecord extends Controller
                               if ($record == 0) {
                                   $refused++;
                                   $errmsg[]=strval($NUMBER) . ' not found' ;
-                              }
+                              }   else {$success[] =$NUMBER;}
                           }
                       }
                   } else { $errmsg[]="Table ".$tableprice." is busy"; $refused=$totalrec; }
                   $block->status = 0;  // Знімаємо блок з таблиці
                   $block->save();
+                 foreach ($errmsg as $arr)
+                                        {
+                                            $logg = new log;
+                                            $logg->brand  =  $brand;
+                                            $logg->action =  'update';
+                                            $logg->status =  'error';
+                                            $logg->number =  $arr;
+                                            $logg->message = 'Record not found';
+                                            $logg->save();
+                                        }
+                 foreach ($success as $arr)
+                                        {
+                                            $logg = new log;
+                                            $logg->brand  =  $brand;
+                                            $logg->action =  'update';
+                                            $logg->status =  'success';
+                                            $logg->number =  $arr;
+                                            $logg->message = "Record successfully updated";
+                                            $logg->save();
+                                        }
+
               } else  {
                     return  back()->with('errors',"No file uploaded");
-                         }
+                      }
 
               return back()->with(['updated'=> $updated,'total'=> $totalrec,'refused'=> $refused,'errmsg'=>$errmsg ]);
           }

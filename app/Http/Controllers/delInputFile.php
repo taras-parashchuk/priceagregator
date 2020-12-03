@@ -7,7 +7,7 @@ use Storage;
 
 
 use App\File;
-
+use App\log;
 
 
 class delInputFile extends Controller
@@ -18,7 +18,7 @@ class delInputFile extends Controller
         //return response()->json(array('msg' => $msg), 200);
         $brand = $request->brand;
 
-        $files = file::where('brand','=',$brand)->where('mission','=','update')->get();
+        $files = file::where('brand','=',$brand)->get();
 
 
         $deletelist = array();
@@ -35,6 +35,24 @@ class delInputFile extends Controller
         $files = file::where('brand','=',$brand)->delete();
 
         Storage::delete($deletelist);
+
+        if ($deleted > 0)
+                    {
+                       $status  = "success";
+                       $message = " Deleted ". $deleted." input file(s) ";
+
+                    } else {
+                       $status  = "error";
+                       $message = " No files found in the input folder";
+                            }
+
+        $logg = new log;
+        $logg->brand   = $brand;
+        $logg->status  = $status;
+        $logg->action  = "delete";
+        $logg->message = $message;
+        $logg->save();
+
 
 
         return  back()->with(['deleted'=>$deleted]);

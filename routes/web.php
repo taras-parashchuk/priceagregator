@@ -13,24 +13,14 @@ use Illuminate\Http\Request;
 |
 */
 
-
-
-
-
 Auth::routes();
 /*
-
-
-
 
 Route::get('/edit', function(){
 
     return view('layouts.layout');
 
 });
-
-
-
 
 Route::get('/{brand?}',function(Request $request, $brand = '*'){
     $request->session()->put('brand', $brand);
@@ -42,18 +32,18 @@ Route::get('/', function (Request $request) {
 
     $brand = $request->session()->get('brand');
 
-    if ($brand = "BMW")    { return redirect('/bmw'); }
-    if ($brand = "VAG")    { return redirect('/vag'); }
-    if ($brand = "VOLVO")  { return redirect('/volvo'); }
-    if ($brand = "daimler"){ return redirect('/daimler');}
-    if ($brand = "FIAT"){ return redirect('/fiat');}
+    if ($brand == "BMW")    { return redirect('/bmw');     }
+    if ($brand == "VAG")    { return redirect('/vag');     }
+    if ($brand == "VOLVO")  { return redirect('/volvo');   }
+    if ($brand == "daimler"){ return redirect('/daimler'); }
+    if ($brand == "FIAT")   { return redirect('/fiat');    }
 
-    if ($brand = "TOYOTA"){ return redirect('/toyota');}
-    if ($brand = "PSA"){ return redirect('/psa');}
-    if ($brand = "GM"){ return redirect('/gm');}
-    if ($brand = "HYUNDAI"){ return redirect('/hyundai');}
-    if ($brand = "MAZDA"){ return redirect('/mazda');}
-    if ($brand = "SUZUKI"){ return redirect('/suzuki');}
+    if ($brand == "TOYOTA")  { return redirect('/toyota'); }
+    if ($brand == "PSA")     { return redirect('/psa');    }
+    if ($brand == "GM")      { return redirect('/gm');     }
+    if ($brand == "HYUNDAI") { return redirect('/hyundai');}
+    if ($brand == "MAZDA")   { return redirect('/mazda');  }
+    if ($brand == "SUZUKI")  { return redirect('/suzuki'); }
 
     return view('layouts.layout');
 });
@@ -90,9 +80,12 @@ Route::get('/bmwimp','bmwimportcontroller@import');
 Route::get('/vagimp','vagimportcontroller@import');
 
 Route::post('/delinput','delInputFile@index');
-Route::post('/deloutput','delOutputFile@index');
 
+Route::get('/dwbase','downloadDatabase@index');
 
+Route::get('/log',   'logview@index');
+Route::get('/files',   'fileview@index');
+Route::get('/clearlog','logview@clear');
 /*
 Route::get('/suzuki','SessionController@storeSessionData');
 Route::get('/volvo','SessionController@storeSessionData');

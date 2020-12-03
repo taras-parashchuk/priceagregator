@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Storage;
 use App\File;
+use App\log;
 
 
 class delOUtputFile extends Controller
@@ -33,6 +34,22 @@ class delOUtputFile extends Controller
 
         Storage::delete($deletelist);
 
+        if ($deleted > 0)
+        {
+            $status  = "success";
+            $message = " Deleted". $deleted." output files ";
+
+        } else {
+            $status  = "error";
+            $message = " No files found in the output folder";
+        }
+
+        $logg = new log;
+        $logg->brand   = $brand;
+        $logg->status  = $status;
+        $logg->action  = "delete";
+        $logg->message = $message;
+        $logg->save();
 
         return  back()->with(['deleted'=>$deleted]);
     }

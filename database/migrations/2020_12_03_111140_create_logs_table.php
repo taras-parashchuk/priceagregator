@@ -17,7 +17,10 @@ class CreateLogsTable extends Migration
             $table->id();
             $table->timestamps();
             $table->string('brand');
-            $table->string('status');
+            $table->string('number')->nullable();
+            $table->string('action');
+
+            $table->string('status')->nullable();
             $table->text('message');
     });
 
