@@ -88,6 +88,11 @@ Route::get('/bmwimp','bmwimportcontroller@import');
 
 //Route::get('/vagimp','vagimportcontroller@fileUploadPost');
 Route::get('/vagimp','vagimportcontroller@import');
+
+Route::post('/delinput','delInputFile@index');
+Route::post('/deloutput','delOutputFile@index');
+
+
 /*
 Route::get('/suzuki','SessionController@storeSessionData');
 Route::get('/volvo','SessionController@storeSessionData');

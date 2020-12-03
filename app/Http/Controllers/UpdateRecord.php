@@ -37,6 +37,26 @@ class UpdateRecord extends Controller
         $Title=$request->input('Title');
         $Teileart=$request->input('Teileart');
 
+        if ($brand == "VAG") {$tableprice = 'vagprices'; }
+        if ($brand == "BMW") {$tableprice = 'bmwprices'; }
+        if ($brand == "DAIMLER") { $tableprice= 'daimlerprices';  }
+        if ($brand == "FIAT") { $tableprice = 'fiatprices'; }
+        if ($brand == "GM") { $tableprice = 'gmprices'; }
+        if ($brand == "HYUNDAI") { $tableprice = 'hyundaiprices'; }
+        if ($brand == "MAZDA") { $tableprice = 'mazdaprices';  }
+        if ($brand == "PSA") {$tableprice = 'psaprices';  }
+        if ($brand == "SUZUKI") {$tableprice = 'suzukiprices';  }
+        if ($brand == "TOYOTA") {$tableprice = 'toyotaprices'; }
+        if ($brand == "VOLVO") {$tableprice = 'volvoprices' ; }
+
+        $errmsg = array();
+        // Блокуємо таблиці
+        $block = table::find($tableprice);
+        $blocked = $block->status;
+        if ($blocked == 0) {
+
+            $block->status = 1;  //Ставимо блок на таблицю
+            $block->save();
 
             if ($brand == "VAG") {
                 $record = vagprice::where('NUMBER', $Number)->update(['NUMBER2' => $Number2, 'WEIGHT' => $Weight, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $Title, 'TEILEART' => $Teileart]);
@@ -72,9 +92,13 @@ class UpdateRecord extends Controller
             if ($brand == "SUZUKI") {
                 $record = suzukiprice::where('NUMBER', $Number)->update(['NUMBER2' => $Number2, 'WEIGHT' => $Weight, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $Title, 'TEILEART' => $Teileart]);
             }
+        } else { $errmsg[]="Table ".$tableprice." is busy"; $refused=1;}
+
+        $block->status = 0;  // Знімаємо блок з таблиці
+        $block->save();
 
              if ($record > 0) { $errors = 0; } else { $errors = 1;}
-         return back()->with(['updated'=> $record,'refused'=>$errors]);
+         return back()->with(['updated'=> $record,'total'=>1,'refused'=>$errors,'errmsg'=>$errmsg]);
                       }
 
 
@@ -110,10 +134,10 @@ class UpdateRecord extends Controller
                   {
                       if (!empty($linesar)) {
                           $csvarr[$i] = str_getcsv($linesar, ";",'"',"\\");
-
-                                           }
+                                              }
                       $i++;
                   }
+                  if (count($csvarr[1]) <> 8) { $csvarr = array(); $errmsg[] =" File not supported. Must be in CSV format,semicolon separated, 8 columns";}
 
                   $totalrec = count($csvarr);
 
@@ -274,14 +298,14 @@ class UpdateRecord extends Controller
                               }
                           }
                       }
-                  }
+                  } else { $errmsg[]="Table ".$tableprice." is busy"; $refused=$totalrec; }
                   $block->status = 0;  // Знімаємо блок з таблиці
                   $block->save();
               } else  {
                     return  back()->with('errors',"No file uploaded");
                          }
 
-              return back()->with(['updated'=> $updated,'total'=> $totalrec,'refused'=> $refused ]);
+              return back()->with(['updated'=> $updated,'total'=> $totalrec,'refused'=> $refused,'errmsg'=>$errmsg ]);
           }
 
 

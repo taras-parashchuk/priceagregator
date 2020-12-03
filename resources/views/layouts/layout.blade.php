@@ -27,9 +27,10 @@
  </style>
  <script>
 
-    $changes = {{ Session::get('updated') }}
-    $total =   {{ Session::get('total') }}
-    $refused =  {{ Session::get('refused') }}
+    $changes = <?php  if (Session::get('updated')) { $updated = Session::get('updated'); echo $updated.";";   } else { echo "0;"; }  ?>
+    $total   = <?php  if (Session::get('total')) { $total     = Session::get('total');   echo $total.";";   } else { echo "0;"; }  ?>
+    $refused = <?php  if (Session::get('refused')) { $refused = Session::get('refused'); echo $refused.";";   } else { echo "0;"; }  ?>
+    $deleted = <?php  if (Session::get('deleted')) { $deleted = Session::get('deleted'); echo $deleted.";";   } else { echo "0;"; }  ?>
 
  </script>
 </head>
@@ -92,6 +93,16 @@
                     <a class="dropdown-item" href="#">Шаблон 1</a>
                     <a class="dropdown-item" href="#">Шаблон 2</a>
                     <a class="dropdown-item" href="#">Шаблон 3</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Настройки
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" data-toggle="modal"  data-target="#LogModal" href="#">Просмотр лога</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#delInputFiles" href="#">Удалить входные файлы</a>
+                    <a class="dropdown-item" data-toggle="modal"  data-target="#delOutputFiles" href="#">Удалить выходные файлы</a>
                 </div>
             </li>
             <li class="nav-item">
@@ -480,7 +491,33 @@
         </div>
     </div>
 </div>
-<!------------------------------------------------------------------------------------------------------------------------->
+<!----------------------------------------------------- LOG window ----------------------------------------------------->
+
+
+
+<div class="modal fade" id="LogModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!---------------------------------------------------------------------------------------------------------------------->
 
 @if ($message = Session::get('usersuploaded'))
     <div class="alert alert-success alert-block">
@@ -654,18 +691,57 @@
            </div>
   </div>
 </div>
-<!--------------------- Notification Modal -------------------------->
-<div class="modal"  id="notification" tabindex="-1">
+<!--------------------- Notification Delete input files -------------------------->
+<div class="modal" id="delInputFiles" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="notification-header">
-                <h5 class="modal-title p-5" id="notification-title" >Modal title</h5>
+            <div class="modal-header">
+                <h5 class="modal-title">Удалить входные файлы  {{ Session::get('brand') }} </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Вы собираетесь удалить входные, загруженные файлы. Для бренда  {{ Session::get('brand') }}</p>
+
+            </div>
+            <div class="modal-footer">
+                    <form method="POST" action="/delinput">
+                    @csrf
+                <input type="hidden" name="brand" value="{{ Session::get('brand')}}">
+                <button type="submit" id="ddInputFiles" class="btn btn-primary">Удалить</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
-<!------------------------------------------------------------------>
-<!--------------------- Notification Toast -------------------------->
+<!--------------------------------------------------------------------------------->
+<!--------------------- Notification Delete output files -------------------------->
+<div class="modal" id="delOutputFiles" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Удалить выходные файлы  {{ Session::get('brand') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Вы собираетесь удалить выходные, скачанные файлы. Для бренда  {{ Session::get('brand') }}</p>
+            </div>
+            <div class="modal-footer">
+                @csrf
+                <form method="POST" action="/deloutput">
+                    @csrf
+                    <input type="hidden" name="brand" value="{{ Session::get('brand')}}">
+                <button type="submit" id="ddOutputFiles" class="btn btn-primary">Удалить
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---------------------------------------------------------------------------------->
+<!---------------------------- Notification Toast ---------------------------------->
 
 
 <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-left align-items-center"  >
@@ -688,7 +764,7 @@
 <script>
     $(document).ready(function(){
 
-      //  alert($changes); спрацьовує
+
   //---------   Dialog window price uploading  ----------------//
   //  FileUpload1 -- modal id ; uploadpricefile -- форма выбора файла
         $('#FileUpload1').on('shown.bs.modal', function()
@@ -783,6 +859,20 @@
                   $('.toast').toast('show');
             }
         })
+ //------------------- Модальное окно удалить входные файлы ------------------------//
+       $("#ddInputFiles").on('click',function (){
+
+
+         //  $('#delInputFiles').modal('hide');
+
+
+       });
+ //------------------- Модальное окно удалить выходные файлы ------------------------//
+        $("#ddOutputFiles").on('click',function (){
+        //    $('#delOutputFiles').modal('hide');
+
+
+        });
 
     });  // End document ready
 
@@ -808,27 +898,45 @@
       //  let $changes = Number($("#changedrecords").text());   // читаем в переменную сколько изменений сделано
      //   alert($changes);
        // alert($errors);
-
+       $message = 0;
 
                        $('.toast').toast({delay: 5000});      // показываем всплывающее окно с количеством изменений
-                      // $('.toast').toast('show');
 
-                       if ($refused > 0) {
-                          $("#toasttitle").html("Не совсем успешно. ");
-                           // alert($refused);
-                          $("#toastbody").html(" Изменений сделано : " + $changes + "<br>Всего строк: "+ $total + "<p>Ошибок: " + $refused+"</p>");
+          console.log("Изменений сделано: "+ $changes);
+          console.log("Ошибок :" + $refused);
+          console.log("Всего строк:" + $total);
 
-                                        } else
-                                            {
-                                   $("#toasttitle").html("Успешно. ");
+       if (($changes > 0) && ($refused == 0) ) {
 
-                                   $("#toastbody").html(" Изменений сделано : " + $changes + "<p>Ошибок: " + $refused+"</p>");
-                                            }
+           $("#toasttitle").html("Успешно. ");
+           $("#toastbody").html(" Изменений сделано : " + $changes+"<br>Всего строк :" + $total);
+           $message = 1;
+                                     }
 
-                      // $('#notification').modal('show');
-                       $('.toast').toast('show');
+
+        if (($total > 0) && ($refused >0)) {
+            $("#toasttitle").html("Ошибки !");
+            $("#toastbody").html(" Изменений сделано : " + $changes +"<br>Всего строк :" + $total +"<br>Ошибок: "+ $refused);
+            $message = 1;
+        }
+
+   if ($deleted > 0 ) {
+
+            $("#toasttitle").html("Успешно. ");
+            $("#toastbody").html(" Удалено " +  $deleted +" файл(ов) ");
+            $message = 1;
+        }
+
+        if ($message) {
+            $('.toast').toast('show');
+          $message = 0;
+        }
+
+
+
 
         });
+
 </script>
 </body>
 </html>
