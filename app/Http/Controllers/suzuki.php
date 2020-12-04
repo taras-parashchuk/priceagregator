@@ -11,7 +11,7 @@ class suzuki extends Controller
     {
         $request->session()->put('brand', 'SUZUKI');
         //SessionController@storeSessionData;
-        $products = DB::table('suzukiprices')->paginate(13);
+        $products = DB::table('suzukiprices')->paginate(20);
         $recordscount = DB::table('suzukiprices')->count();
         return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);
 

@@ -609,7 +609,7 @@
                    ------------------>
                     <div class="container">
                         @if(! empty($products)&& count($products)>0)
-                        <table class="table table-bordered">
+                        <table class="table table-bordered table-sm table-hover">
                             <thead>
                             <tr>
                                 <th scope="col">Number</th>

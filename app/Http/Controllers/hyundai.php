@@ -11,7 +11,7 @@ class hyundai extends Controller
     {
         $request->session()->put('brand', 'HYUNDAI');
         //SessionController@storeSessionData;
-        $products = DB::table('hyundaiprices')->paginate(13);
+        $products = DB::table('hyundaiprices')->paginate(20);
         $recordscount = DB::table('hyundaiprices')->count();
         return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);
 

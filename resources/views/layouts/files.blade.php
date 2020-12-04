@@ -60,7 +60,7 @@
                 <h1 class="text-muted">:(  Нет файлов</h1>
                 <div class="row py-5">
                     <div class="col">
-                        <a class="btn btn-outline-primary btn-sm" href="/" role="button">Назад</a>
+                        <a class="btn  btn-primary" href="/" role="button">Назад</a>
                     </div>
                 </div>
             @endif

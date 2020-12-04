@@ -11,7 +11,7 @@ class fiat extends Controller
     {
         $request->session()->put('brand', 'FIAT');
         //SessionController@storeSessionData;
-        $products = DB::table('fiatprices')->paginate(13);
+        $products = DB::table('fiatprices')->paginate(20);
         $recordscount = DB::table('fiatprices')->count();
         return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);
 

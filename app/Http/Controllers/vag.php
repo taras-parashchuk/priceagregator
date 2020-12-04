@@ -10,7 +10,7 @@ class vag extends Controller
     public function viewtwenty(Request $request)
     {
         $request->session()->put('brand', 'VAG');
-        $products = DB::table('vagprices')->paginate(13);
+        $products = DB::table('vagprices')->paginate(20);
         $recordscount = DB::table('vagprices')->count();
         return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);
 

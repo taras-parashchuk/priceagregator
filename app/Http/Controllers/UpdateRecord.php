@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use League\Csv\Reader;
 //use Request;
 USE Session;
 USE DB;
-
+use League\Csv\Exception;
 USE App\vagprice;
 USE App\volvoprice;
 USE App\toyotaprice;
@@ -115,7 +116,7 @@ class UpdateRecord extends Controller
              if ($record > 0) { $errors = 0; } else { $errors = 1;}
          return back()->with(['updated'=> $record,'total'=>1,'refused'=>$errors,'errmsg'=>$errmsg]);
                       }
-
+/************************************************************************************************************************************/
 
         public function updatemany(Request $request)
           {
@@ -138,6 +139,25 @@ class UpdateRecord extends Controller
                     $inpfile->brand = $brand;
                     $inpfile->save();
 
+                /**********************************************************************************/
+                  $contents = Storage::get($storagepath);
+                  $reader = Reader::createFromString($contents);
+                  $reader->setDelimiter(';');
+
+                  $records = $reader->getRecords();
+
+                  foreach ($records as $row) {
+                      $csvarr[] = $row;
+                  }
+                   // dd(count($csvarr));
+                 // $records = $reader->getContent();
+
+                 // dd($content);
+                /**********************************************************************************/
+
+
+
+
                   $contents = Storage::get($storagepath);
                   $linesarr = explode("\r\n",$contents); //розбиваємо по рядках
                   unset($contents);
@@ -145,6 +165,7 @@ class UpdateRecord extends Controller
                 // Формуєм масив з ряків csv
                   $i=0;
                   $updated = 0;
+                  /*        тимчасова на час випробування leagueCSV
                   foreach ($linesarr as $linesar)
                   {
                       if (!empty($linesar)) {
@@ -152,7 +173,7 @@ class UpdateRecord extends Controller
                                               }
                       $i++;
                   }
-
+                    */
                   if (count($csvarr[1]) <> 8) {
                       $csvarr = array();
 

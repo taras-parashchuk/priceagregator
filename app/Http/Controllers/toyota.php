@@ -11,7 +11,7 @@ class toyota extends Controller
     {
         $request->session()->put('brand', 'TOYOTA');
         //SessionController@storeSessionData;
-        $products = DB::table('toyotaprices')->paginate(13);
+        $products = DB::table('toyotaprices')->paginate(20);
         $recordscount = DB::table('toyotaprices')->count();
         return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);
 
