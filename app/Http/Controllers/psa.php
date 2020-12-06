@@ -11,7 +11,7 @@ class psa extends Controller
     {
         $request->session()->put('brand', 'PSA');
         //SessionController@storeSessionData;
-        $products = DB::table('psaprices')->paginate(20);
+        $products = DB::table('psaprices')->paginate(19);
         $recordscount = DB::table('psaprices')->count();
         return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);
 

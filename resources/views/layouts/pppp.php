@@ -1,3 +1,4 @@
+<?php
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -7,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }} @yield('title')</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
 
@@ -18,70 +19,22 @@
     <!-- Styles -->
 
     <style>
-        #pleaseWait, #pleaseWait2,#pleaseWait3 {
+        #pleaseWait, #pleaseWait2 {
             visibility: visible;
         }
-        #spinner1, #spinner2,#spinner3{
-            visibility:hidden;
-        }
-        #progressbar {
+        #spinner1, #spinner2{
             visibility:hidden;
         }
  </style>
  <script>
-
     $changes = <?php  if (Session::get('updated')) { $updated = Session::get('updated'); echo $updated.";";   } else { echo "0;"; }  ?>
-    $total   = <?php  if (Session::get('total'))   { $total   = Session::get('total');   echo $total.";";     } else { echo "0;"; }  ?>
+    $total   = <?php  if (Session::get('total')) { $total     = Session::get('total');   echo $total.";";   } else { echo "0;"; }  ?>
     $refused = <?php  if (Session::get('refused')) { $refused = Session::get('refused'); echo $refused.";";   } else { echo "0;"; }  ?>
     $deleted = <?php  if (Session::get('deleted')) { $deleted = Session::get('deleted'); echo $deleted.";";   } else { echo "0;"; }  ?>
-    $brand   = <?php  if (Session::get('brand'))   { $brand   = Session::get('brand');   echo "'".$brand."';";} else { echo "0;"; }  ?>
-
-    blocked = 0;
-    ticks = 0;
-    posticks = 0;
-    zeroticks = 0;
-    function getMessage() {
-
-        $.ajax({
-            type:'GET',
-            url:'/status',
-            data: {
-                "_token": $('meta[name="csrf-token"]').attr('content'),
-                "brand" : $brand
-            },
-            success:function(data) {
-                console.log("Blocked " + data.blocked);
-                console.log("Status " + data.status);
-                if (data.blocked > 0) {
-                    $("#progressbar").css("visibility","visible");
-                    $("#polzunok").show();
-                    $("#polzunok").attr("style","width:"+ data.blocked +"%");
-                    $("#polzuntitle").html(data.status);
-
-                    return data.blocked;
-                }
-                else         {
-                    if(data.blocked == 0) {zeroticks++;}
-                    if ((data.blocked > 99)||(zeroticks >20)){
-                                clearInterval(polzunchek);
-                                $("#progressbar").css("visibility","hidden");
-                                zeroticks = 0;
-                               }
-                    console.log("Not Blocked ");
-                    return 0;
-                }
-            },
-            error: function (msg) {
-                console.log("AJAX error");
-            }
-        });
-    }
-
  </script>
 </head>
 <body>
 <!-------------------- Navbar --------------------->
-@section('navbar')
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Auto House</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -129,7 +82,6 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#ModalRenewRecord">Обновить Запись</a>
                     <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#ModalRenewRecords">Список изменений</a>
-                    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#ModalAddRecords">Список дополнений</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -140,7 +92,6 @@
                     <a class="dropdown-item" href="#">Шаблон 1</a>
                     <a class="dropdown-item" href="#">Шаблон 2</a>
                     <a class="dropdown-item" href="#">Шаблон 3</a>
-                    <a class="dropdown-item" href="/dwbase">Выгрузить базу</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -148,10 +99,10 @@
                     Настройки
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <!-----  data-toggle="modal"  data-target="#LogModal" --->
-                    <a class="dropdown-item" href="/log">Просмотр лога</a>
-                    <a class="dropdown-item" href="/files">Просмотр файлов</a>
-                   </div>
+                    <a class="dropdown-item" data-toggle="modal"  data-target="#LogModal" href="#">Просмотр лога</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#delInputFiles" href="#">Удалить входные файлы</a>
+                    <a class="dropdown-item" data-toggle="modal"  data-target="#delOutputFiles" href="#">Удалить выходные файлы</a>
+                </div>
             </li>
             <li class="nav-item">
                 <a class="nav-link"  data-toggle="modal" data-target="#ModalHelp" href="#">Помощь</a>
@@ -160,7 +111,6 @@
 
     </div>
 </nav>
-@show
 <!-------------------- End Navbar --------------------->
 
 
@@ -460,7 +410,6 @@
                         <div>
                             @csrf
                             <div class="row mb-3 px-3 text-muted">
-                                Все строки базы с соответствующими номерами будут заменены на значения из файла.<br>
                                 Загрузка файлов только *.csv формата<br>
                                 Расположение столбцов в файле должна соответсвовать столбцам в базе.
                             </div>
@@ -541,107 +490,32 @@
         </div>
     </div>
 </div>
-<!------------------------------------------ Редактирование / Список дополнений ------------------------------------------->
+<!----------------------------------------------------- LOG window ----------------------------------------------------->
 
-<div class="modal fade " id="ModalAddRecords" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="ModalAddRecords" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+
+
+<div class="modal fade" id="LogModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ModalAddRecordslabel">Загрузить список дополнений в базу  {{ Session::get('brand') }}</h5>
-
-
-                <button type="button" class="close" data-dismiss="modal" id="pleaseWait3" aria-label="Close">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form action="/additions" method="POST"  id="uploadadditionsform" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <div>
-                            @csrf
-                            <div class="row mb-3 px-3 text-muted">
-                                Если в базе нет записи с соответствующим номером, она будет добавлена.<br>
-                                Существующие записи не обновляются.<br>
-                                Загрузка файлов только *.csv формата<br>
-                                Расположение столбцов в файле должна соответсвовать столбцам в базе.
-                            </div>
-                            <div class="row mb-1">
-                                <div class="col">
-                                    <b>Файл</b>
-                                </div>
-
-                                <div class="col">
-                                    <p class="text-center">A</p>
-                                </div>
-                                <div class="col">
-                                    <p class="text-center">B</p>
-                                </div>
-                                <div class="col">
-                                    <p class="text-center">C</p>
-                                </div>
-                                <div class="col">
-                                    <p class="text-center">D</p>
-                                </div>
-                                <div class="col">
-                                    <p class="text-center">E</p>
-                                </div>
-                                <div class="col">
-                                    <p class="text-center">F</p>
-                                </div>
-                                <div class="col">
-                                    <p class="text-center">G</p>
-                                </div>
-                                <div class="col">
-                                    <p class="text-center">H</p>
-                                </div>
-                            </div>
-                            <div class="row  mb-4">
-                                <div class="col">
-                                    <b>База</b>
-                                </div>
-                                <div class="col">
-                                    Number
-                                </div>
-                                <div class="col">
-                                    Number2
-                                </div>
-                                <div class="col">
-                                    Weight
-                                </div>
-                                <div class="col">
-                                    VPE
-                                </div>
-                                <div class="col">
-                                    VIN
-                                </div>
-                                <div class="col">
-                                    NL
-                                </div>
-                                <div class="col">
-                                    Title
-                                </div>
-                                <div class="col">
-                                    Teileart
-                                </div>
-                            </div>
-
-                            <input type="file" id="fileadditions" name="fileadditions">
-                        </div>
-
-                    </div>
-
-                    <div class="modal-footer ">
-                        <button type="submit" class="btn btn-primary" id="uploadadditions" >
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner3"></span>
-                            Загрузить
-                        </button>
-                    </div>
-                </form>
+                ...
             </div>
-
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
         </div>
     </div>
 </div>
+
+
+
 <!---------------------------------------------------------------------------------------------------------------------->
 
 @if ($message = Session::get('usersuploaded'))
@@ -657,25 +531,22 @@
         @elseif (Session::has('brand')=="")
             <b>Бренд не выбран</b>
        @endif
- </div>
+
+    </div>
     <div class="col-1 mx-1">
         @isset($kol)
             <b>Записей:</b> <p id="recordscount"> {{ $kol ?? '' }}</p>
         @endisset
-    </div>
+       </div>
+        @if (Session::has('updated'))
+        <b>Изменено: </b> <p  id="changedrecords">{{Session::get('updated')}}</p>
+        @endif
 
-    <div class="col-9 mx-1">
-        <div class="" id="progressbar">
-        <div class="font-weight-bold" id="polzuntitle">Обновление</div>
-            <p>Дождитесь выполнения задачи</p>
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" id="polzunok" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 1%"></div>
-            </div>
-        </div>
+    <div class="col-10 mx-1">
+
     </div>
 
 </div>
-@section('content')
            <!------------------------------- TABS ---------------------------->
 <div class="row">
     <div class="col">
@@ -733,7 +604,7 @@
                    ------------------>
                     <div class="container">
                         @if(! empty($products)&& count($products)>0)
-                        <table class="table table-bordered table-sm table-hover">
+                        <table class="table table-bordered">
                             <thead>
                             <tr>
                                 <th scope="col">Number</th>
@@ -819,7 +690,6 @@
            </div>
   </div>
 </div>
-           @show
 <!--------------------- Notification Delete input files -------------------------->
 <div class="modal" id="delInputFiles" tabindex="-1">
     <div class="modal-dialog">
@@ -869,12 +739,12 @@
         </div>
     </div>
 </div>
-<!----------------------------------------------------------------------------------------->
-<!---------------------------- Notification Toast Messages -------------------------------->
+<!---------------------------------------------------------------------------------->
+<!---------------------------- Notification Toast ---------------------------------->
 
 
 <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-left align-items-center"  >
-    <div class="toast" style="position: absolute; top: 60px; right: 10px; min-width:300px;height:130px;" data-autohide="true">
+    <div class="toast" style="position: absolute; top: 70px; right: 10px; min-width:300px;height:130px;" data-autohide="true">
         <div class="toast-header">
             <strong class="mr-auto" id="toasttitle">AHTUNG</strong>
             <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
@@ -887,27 +757,15 @@
     </div>
 </div>
 
-<!-------------------------------------------------------------------------------------------------->
-
-<!---------------------------------------------------------------------------------------->
-
-<script
-    src="https://code.jquery.com/jquery-3.5.1.min.js"
-    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-    crossorigin="anonymous"></script>
-
+<!------------------------------------------------------------------->
+   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 <script>
     $(document).ready(function(){
-
-
-
-
   //---------   Dialog window price uploading  ----------------//
   //  FileUpload1 -- modal id ; uploadpricefile -- форма выбора файла
         $('#FileUpload1').on('shown.bs.modal', function()
            {
-
                if ($('#uploadpricefile').get(0).files.length === 0)    //  Поле выбора файла
                {      // если не выбран файл для загрузки, деактивируем кнопку
                    console.log("не выбран файл для загрузки");
@@ -917,10 +775,8 @@
                    console.log("выбран файл для загрузки");
                    $("#loadprice").attr("disabled", false);
                }
-
              $('#FileUpload1').change(function()    //форма изменилась, проверяем файл ли файл
                          {
-
                              if ($('#uploadpricefile').get(0).files.length === 0)    //  Поле выбора файла
                              {      // если не выбран файл для загрузки, деактивируем кнопку
                                  console.log("не выбран файл для загрузки");
@@ -932,8 +788,6 @@
                              }
                           })
                  })
-
-
             $("#loadprice").click(function(){                     // Если нажали кнопку загрузить прайс
                                                           // Деактивируем кнопку, показываем спиннер
             $("#pleaseWait").css("visibility", "hidden"); // hide close sign
@@ -942,24 +796,13 @@
             $("#loadprice").attr("disabled", true);       // button disabled after 1 minute
         }, 1000);
       });
-
         $("#uploadchanges").click(function(){              // Когда нажали кнопку Редактирование -> список изменений -> загрузить
             $("#pleaseWait2").css("visibility", "hidden"); // hide close sign
             $("#spinner2").css("visibility", "visible");   // show spinner
                setTimeout(function(){
                 $("#uploadchanges").attr("disabled", true);       // button disabled after 1 second
             }, 1000);
-               setTimeout(function(){
-                   $("#ModalRenewRecords").modal('hide');
-               },3000);
-                blocked = 1;
-                if(blocked > 0) {
-              let  polzuncheck = setInterval(getMessage, 3000);
-                    $("#progressbar").css("visibility","visible");
-                    $("#polzunok").show();
-                           }
       });
-
         $('#ModalRenewRecords').on('shown.bs.modal', function () {    // "редактирование -> список изменений" модальное окно
             let $recordscount = Number($("#recordscount").text());
             if ($recordscount == 0) {                                 // если записей в базе 0 то деактивируем кнопку, показываем сообщение
@@ -992,9 +835,7 @@
                 }
             });
         })
-
         $('#ModalRenewRecord').on('shown.bs.modal', function () {   // Редактирование обновить запись
-
             let $recordscount = Number($("#recordscount").text());
             if ($recordscount == 0) {                               // Если в базе нет записей, деактивируем кнопку, показываем сообщение
                  console.log("button  renewrecord disabled");
@@ -1009,21 +850,13 @@
         })
  //------------------- Модальное окно удалить входные файлы ------------------------//
        $("#ddInputFiles").on('click',function (){
-
-
          //  $('#delInputFiles').modal('hide');
-
-
        });
  //------------------- Модальное окно удалить выходные файлы ------------------------//
         $("#ddOutputFiles").on('click',function (){
         //    $('#delOutputFiles').modal('hide');
-
-
         });
-
     });  // End document ready
-
     // Когда форма "новый прайс -> загрузить прячется", возвращаем стили
    $("#FileUpload1").on('hidden.bs.modal', function(){
         $("#loadprice").attr("disabled", false);
@@ -1036,100 +869,38 @@
             $("#uploadchanges").attr("disabled", false);
             $("#spinner2").css("visibility", "hidden");
             $("#pleaseWait2").css("visibility", "visible");
-
       });
     //-----------------------------------------------------------//
-
-
     window.addEventListener('load', (event) => {              // При новой загрузке страницы
         //updates made in database notification activate
       //  let $changes = Number($("#changedrecords").text());   // читаем в переменную сколько изменений сделано
      //   alert($changes);
        // alert($errors);
-
-
-
-
-        function getMessage() {
-            $.ajax({
-                type:'GET',
-                url:'/status',
-                data: {
-                        "_token": $('meta[name="csrf-token"]').attr('content'),
-                        "brand" : $brand
-                      },
-                success:function(data) {
-                              console.log("Blocked " + data.blocked);
-                              console.log("Status " + data.status);
-                    if (data.blocked > 0) {
-                                            $("#progressbar").css("visibility","visible");
-                                            $("#polzunok").show();
-                                            $("#polzunok").attr("style","width:"+ data.blocked +"%");
-                                            $("#polzuntitle").html(data.status);
-
-                                          }
-                             else         {  $("#progressbar").css("visibility","hidden");
-                                            console.log("Not Blocked ");
-                                           }
-                },
-                error: function (msg) {
-                     console.log("AJAX error");
-                }
-            });
-        }
-
-            getMessage();
-
-
-
        $message = 0;
-
                        $('.toast').toast({delay: 5000});      // показываем всплывающее окно с количеством изменений
-
           console.log("Изменений сделано: "+ $changes);
           console.log("Ошибок :" + $refused);
           console.log("Всего строк:" + $total);
-
        if (($changes > 0) && ($refused == 0) ) {
-
            $("#toasttitle").html("Успешно. ");
            $("#toastbody").html(" Изменений сделано : " + $changes+"<br>Всего строк :" + $total);
            $message = 1;
                                      }
-
-
         if (($total > 0) && ($refused >0)) {
             $("#toasttitle").html("Ошибки !");
             $("#toastbody").html(" Изменений сделано : " + $changes +"<br>Всего строк :" + $total +"<br>Ошибок: "+ $refused);
             $message = 1;
         }
-
    if ($deleted > 0 ) {
-
             $("#toasttitle").html("Успешно. ");
             $("#toastbody").html(" Удалено " +  $deleted +" файл(ов) ");
             $message = 1;
         }
-
         if ($message) {
             $('.toast').toast('show');
           $message = 0;
         }
         });
-
-
-    //Check status of the table
-
-//    $("window").on('load',function() {
-//              alert("Hello");
-//            }
-//        );
-
-
-
-    // VAg   v CSV
-
-
 </script>
 </body>
 </html>

@@ -14,19 +14,7 @@ use Illuminate\Http\Request;
 */
 
 Auth::routes();
-/*
 
-Route::get('/edit', function(){
-
-    return view('layouts.layout');
-
-});
-
-Route::get('/{brand?}',function(Request $request, $brand = '*'){
-    $request->session()->put('brand', $brand);
-return view('layouts.layout');
-});
-*/
 
 Route::get('/', function (Request $request) {
 
@@ -48,14 +36,6 @@ Route::get('/', function (Request $request) {
     return view('layouts.layout');
 });
 
-
-
-/*
-Route::get('/bmw', function(Request $request){
-
-    $request->session()->put('brand', 'bmw');
-    return view('layouts.layout');
-}); */
 Route::get('/bmw','bmw@viewtwenty');
 
 Route::get('/vag', 'vag@viewtwenty');
@@ -86,27 +66,8 @@ Route::get('/dwbase','downloadDatabase@index');
 Route::get('/log',   'logview@index');
 Route::get('/files',   'fileview@index');
 Route::get('/clearlog','logview@clear');
-/*
-Route::get('/suzuki','SessionController@storeSessionData');
-Route::get('/volvo','SessionController@storeSessionData');
 
-
-Route::get('/bmw', function(Request $request){
-    //session(['brand' => 'bmv']);
-    $request->session()->put('brand', 'bmw');
-    $request->session()->save();
-    dd($request->session()->get('brand'));
-    return "BMV";
-});
-
-Route::get('/vag', function(Request $request){
-    $request->session()->put('brand', 'vag');
-    $request->session()->save();
-    // session(['brand' => 'vag']);
-    dd($request->session()->get('brand'));
-    return "VAG";
-});
-*/
+Route::get('/status','databasestatus@index');
 
 
 Route::post('/update','UpdateRecord@update');

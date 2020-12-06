@@ -11,7 +11,7 @@ class mazda extends Controller
     {
         $request->session()->put('brand', 'MAZDA');
         //SessionController@storeSessionData;
-        $products = DB::table('mazdaprices')->paginate(20);
+        $products = DB::table('mazdaprices')->paginate(19);
         $recordscount = DB::table('mazdaprices')->count();
         return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);
 

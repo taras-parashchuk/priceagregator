@@ -12,7 +12,7 @@ class bmw extends Controller
            {
                $request->session()->put('brand', 'BMW');
                //SessionController@storeSessionData;
-               $products = DB::table('bmwprices')->paginate(20);
+               $products = DB::table('bmwprices')->paginate(19);
                $recordscount = DB::table('bmwprices')->count();
             //  dd($request);
                return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);

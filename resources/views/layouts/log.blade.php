@@ -45,7 +45,7 @@
 
                         </tbody>
                     </table>
-
+                {{ $logs->links() }}
                     <div class="row py-3">
                         <div class="col-1">
                             <a class="btn btn-primary" href="/" role="button">Назад</a>

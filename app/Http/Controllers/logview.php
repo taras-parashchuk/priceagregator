@@ -11,7 +11,8 @@ class logview extends Controller
     public function index(Request $request)
                                     {
             $brand = Session::get('brand');
-            $logview = log::where('brand','=',$brand)->get();
+           // $logview = log::where('brand','=',$brand)->get();
+            $logview = log::where('brand','=',$brand)->paginate(25);
             //dd($logview);
             return view('layouts.log')->with(['logs'=>$logview]);
                                     }

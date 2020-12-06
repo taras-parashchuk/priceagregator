@@ -24,6 +24,7 @@ USE App\suzukiprice;
 use App\File;
 USE App\table;
 USE App\log;
+use Illuminate\Support\Facades\Cache;
 
 class UpdateRecord extends Controller
 {
@@ -40,27 +41,35 @@ class UpdateRecord extends Controller
         $Teileart=$request->input('Teileart');
 
         $errmsg = array();
+        $message = "";
 
-        if ($brand == "VAG") {$tableprice = 'vagprices'; }
-        if ($brand == "BMW") {$tableprice = 'bmwprices'; }
-        if ($brand == "DAIMLER") { $tableprice= 'daimlerprices';  }
-        if ($brand == "FIAT") { $tableprice = 'fiatprices'; }
-        if ($brand == "GM") { $tableprice = 'gmprices'; }
-        if ($brand == "HYUNDAI") { $tableprice = 'hyundaiprices'; }
-        if ($brand == "MAZDA") { $tableprice = 'mazdaprices';  }
-        if ($brand == "PSA") {$tableprice = 'psaprices';  }
-        if ($brand == "SUZUKI") {$tableprice = 'suzukiprices';  }
-        if ($brand == "TOYOTA") {$tableprice = 'toyotaprices'; }
-        if ($brand == "VOLVO") {$tableprice = 'volvoprices' ; }
+        if ($brand == "VAG")      {$tableprice = 'vagprices';     }
+        if ($brand == "BMW")      {$tableprice = 'bmwprices';     }
+        if ($brand == "DAIMLER")  {$tableprice= 'daimlerprices';  }
+        if ($brand == "FIAT")     {$tableprice = 'fiatprices';    }
+        if ($brand == "GM")       {$tableprice = 'gmprices';      }
+        if ($brand == "HYUNDAI")  {$tableprice = 'hyundaiprices'; }
+        if ($brand == "MAZDA")    {$tableprice = 'mazdaprices';   }
+        if ($brand == "PSA")      {$tableprice = 'psaprices';     }
+        if ($brand == "SUZUKI")   {$tableprice = 'suzukiprices';  }
+        if ($brand == "TOYOTA")   {$tableprice = 'toyotaprices';  }
+        if ($brand == "VOLVO")    {$tableprice = 'volvoprices' ;  }
 
 
         // Блокуємо таблиці
-        $block = table::find($tableprice);
-        $blocked = $block->status;
-        if ($blocked == 0) {
+          //$block = table::find($tableprice);
+          //$blocked = $block->status;
+          $blocked  = Cache::get($tableprice);
+          $database = Cache::get('database');
+          $record = 0;
 
-            $block->status = 1;  //Ставимо блок на таблицю
-            $block->save();
+        if (($blocked == null)&&($database == null)) {
+
+            //$block->status = 1;  //Ставимо блок на таблицю
+            //$block->save();
+            $blocked = Cache::put($tableprice,"1");
+            Cache::put($tableprice."action","Updating");
+            Cache::put('database',1);
 
             if ($brand == "VAG") {
                 $record = vagprice::where('NUMBER', $Number)->update(['NUMBER2' => $Number2, 'WEIGHT' => $Weight, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $Title, 'TEILEART' => $Teileart]);
@@ -96,13 +105,14 @@ class UpdateRecord extends Controller
             if ($brand == "SUZUKI") {
                 $record = suzukiprice::where('NUMBER', $Number)->update(['NUMBER2' => $Number2, 'WEIGHT' => $Weight, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $Title, 'TEILEART' => $Teileart]);
             }
-        } else { $errmsg[]="Table ".$tableprice." is busy"; $refused=1;}
+        } else { $errmsg[]="Table ".$tableprice." is busy"; $refused=1; $message = "Database is busy";}
 
-        $block->status = 0;  // Знімаємо блок з таблиці
-        $block->save();
+        //$block->status = 0;  // Знімаємо блок з таблиці
+        //$block->save();
+          $blocked = Cache::pull($tableprice);
+        Cache::pull($tableprice."action");
+        Cache::pull('database');
 
-        if ($record > 0 ) { $message ="Record successfully updated"; $status= 'success';}
-                         else {$message = "Record not found"; $status= 'error';}
 
         $logg = new log;
         $logg->brand  =  $brand;
@@ -114,7 +124,7 @@ class UpdateRecord extends Controller
 
 
              if ($record > 0) { $errors = 0; } else { $errors = 1;}
-         return back()->with(['updated'=> $record,'total'=>1,'refused'=>$errors,'errmsg'=>$errmsg]);
+         return back()->with(['updated'=> $record,'total'=>1,'refused'=>$errors,'errmsg'=>$errmsg,'message'=>$message ]);
                       }
 /************************************************************************************************************************************/
 
@@ -158,9 +168,9 @@ class UpdateRecord extends Controller
 
 
 
-                  $contents = Storage::get($storagepath);
-                  $linesarr = explode("\r\n",$contents); //розбиваємо по рядках
-                  unset($contents);
+                  //$contents = Storage::get($storagepath);
+                  // $linesarr = explode("\r\n",$contents); //розбиваємо по рядках
+                  // unset($contents);
 
                 // Формуєм масив з ряків csv
                   $i=0;
@@ -209,21 +219,34 @@ class UpdateRecord extends Controller
             //  dd($table);
 
                     // Блокуємо таблиці
-                  $block = table::find($tableprice);
-                  $blocked = $block->status;
-
+                  //$block = table::find($tableprice);
+                  //$blocked = $block->status;
+                  $blocked = Cache::get($tableprice);
+                  $database = Cache::get('database');
                   $errmsg = array();
                   $success =array();
+                  $message ="";
 
-                  if ($blocked == 0) {
+                  if (($blocked == null)&&($database==null)) {
 
-                      $block->status = 1;  //Ставимо блок на таблицю
-                      $block->save();
+                      //$block->status = 1;  //Ставимо блок на таблицю
+                      //$block->save();
+                      $blocked = Cache::put($tableprice,"1");
+                      Cache::put($tableprice."action","Updating");
+                      Cache::put('database',1);
                       $updated = 0;
-                      $errors = 0;
-
+                      $errors  = 0;
+                      $i = 0;
                       // Пишемо рядки в базу
                       foreach ($csvarr as $arr) {
+
+                           $i++;
+                           $process = ($i/$totalrec)*100;
+                           if (($process < 1)&&($process >0)) {$process = 1;}
+
+                          Cache::set($tableprice, $process);
+                          Cache::put($tableprice."action","Updating");
+
                           if (isset($arr[0])) {$NUMBER = $arr[0]; } else { $NUMBER = " "; }
                           if (isset($arr[1])) {$NUMBER2 = $arr[1];} else { $NUMBER2 = " ";}
                           if (isset($arr[2])) {$WEIGHT = $arr[2]; } else { $WEIGHT = " "; }
@@ -244,20 +267,6 @@ class UpdateRecord extends Controller
                           $TITLE = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $TITLE);
                           $TEILEART = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $TEILEART);
 
-                          /*
-                          $reсord = vagprice::find($NUMBER);
-                          $reсord->NUMBER2 = $NUMBER2;
-                          $reсord->WEIGHT  = $WEIGHT;
-                          $reсord->VPE     = $VPE;
-                          $reсord->VIN     = $VIN;
-                          $reсord->NL      = $NL;
-                          $reсord->TITLE   = $TITLE;
-                          $reсord->TEILEART= $TEILEART;
-                          $reсord->save();
-                         */
-
-
-                          //$brand = 'VAG';
 
                           if ($brand == "VAG") {
 
@@ -348,10 +357,18 @@ class UpdateRecord extends Controller
                                   $errmsg[]=strval($NUMBER) . ' not found' ;
                               }   else {$success[] =$NUMBER;}
                           }
-                      }
-                  } else { $errmsg[]="Table ".$tableprice." is busy"; $refused=$totalrec; }
-                  $block->status = 0;  // Знімаємо блок з таблиці
-                  $block->save();
+                          //$block->status = 0;  // Знімаємо блок з таблиці
+                          //$block->save();
+
+                      }  //End foreach
+
+                      Cache::pull($tableprice);
+                      Cache::pull($tableprice."action");
+                      Cache::pull('database');
+
+                  } else { $errmsg[]="Table ".$tableprice." is busy"; $refused=$totalrec;
+                    $message ="Database is busy.";}
+
                  foreach ($errmsg as $arr)
                                         {
                                             $logg = new log;
@@ -377,7 +394,7 @@ class UpdateRecord extends Controller
                     return  back()->with('errors',"No file uploaded");
                       }
 
-              return back()->with(['updated'=> $updated,'total'=> $totalrec,'refused'=> $refused,'errmsg'=>$errmsg ]);
+              return back()->with(['updated'=> $updated,'total'=> $totalrec,'refused'=> $refused,'errmsg'=>$errmsg,'message'=>$message ]);
           }
 
 

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use DB;
 use Session;
+use Illuminate\Support\Facades\Cache;
 
 class UploadFileController extends Controller
 {
@@ -108,8 +109,7 @@ class UploadFileController extends Controller
 
         $fullname = $fileName;
           // dd($request);
-        return back()
-            ->with('success','Вы успешно загрузили файл.')
+        return back()->with('success','Вы успешно загрузили файл.')
             ->with('timespent',$timespent);
           //  ->with('content',)
 

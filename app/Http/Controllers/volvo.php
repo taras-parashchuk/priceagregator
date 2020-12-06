@@ -10,7 +10,7 @@ class volvo extends Controller
     public function viewtwenty(Request $request)
     {
         $request->session()->put('brand', 'VOLVO');
-        $products = DB::table('volvoprices')->paginate(20);
+        $products = DB::table('volvoprices')->paginate(19);
         $recordscount = DB::table('volvoprices')->count();
         return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);
     }

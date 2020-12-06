@@ -11,7 +11,7 @@ class gm extends Controller
     {
         $request->session()->put('brand', 'GM');
         //SessionController@storeSessionData;
-        $products = DB::table('gmprices')->paginate(20);
+        $products = DB::table('gmprices')->paginate(19);
         $recordscount = DB::table('gmprices')->count();
         return view('layouts.layout', ['products' => $products,'kol' => $recordscount]);
 
