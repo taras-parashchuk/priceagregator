@@ -72,5 +72,7 @@ Route::get('/status','databasestatus@index');
 
 Route::post('/update','UpdateRecord@update');
 Route::post('/updates','UpdateRecord@updatemany');
+Route::post( '/additions','addrecords@index');
 
 Route::post('file-upload', 'UploadFileController@fileUploadPost')->name('file.upload.post');
+Route::get('/getnumber','programming@index');

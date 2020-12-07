@@ -1,3 +1,9 @@
+@php
+    $letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z' ,'AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ'];
+    $prcolnum = 0;
+@endphp
+
+
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -30,11 +36,16 @@
  </style>
  <script>
 
-    $changes = <?php  if (Session::get('updated')) { $updated = Session::get('updated'); echo $updated.";";   } else { echo "0;"; }  ?>
-    $total   = <?php  if (Session::get('total'))   { $total   = Session::get('total');   echo $total.";";     } else { echo "0;"; }  ?>
-    $refused = <?php  if (Session::get('refused')) { $refused = Session::get('refused'); echo $refused.";";   } else { echo "0;"; }  ?>
-    $deleted = <?php  if (Session::get('deleted')) { $deleted = Session::get('deleted'); echo $deleted.";";   } else { echo "0;"; }  ?>
-    $brand   = <?php  if (Session::get('brand'))   { $brand   = Session::get('brand');   echo "'".$brand."';";} else { echo "0;"; }  ?>
+    $changes = <?php  if (Session::get('updated'))  { $updated = Session::get('updated'); echo $updated.";";   } else { echo "0;"; }  ?>
+    $total   = <?php  if (Session::get('total'))    { $total   = Session::get('total');   echo $total.";";     } else { echo "0;"; }  ?>
+    $refused = <?php  if (Session::get('refused'))  { $refused = Session::get('refused'); echo $refused.";";   } else { echo "0;"; }  ?>
+    $deleted = <?php  if (Session::get('deleted'))  { $deleted = Session::get('deleted'); echo $deleted.";";   } else { echo "0;"; }  ?>
+    $brand   = <?php  if (Session::get('brand'))    { $brand   = Session::get('brand');   echo "'".$brand."';";} else { echo "0;"; }  ?>
+    $added   = <?php  if (Session::get('added'))    { $added   = Session::get('added');   echo "'".$added."';";} else { echo "0;"; }  ?>
+    $message   = <?php  if (Session::get('message')){ $message   = Session::get('message');echo "'".$message."';";} else { echo "0;"; }?>
+
+    $KIKO = {{Session::get('prcolnum')}}
+
 
     blocked = 0;
     ticks = 0;
@@ -691,46 +702,7 @@
             <div class="tab-content" id="myTabContent">
 
                 <div class="tab-pane fade show active" id="input2" role="tabpanel" aria-labelledby="input2-tab">
-                    <!-------------
-                   <table class="table table-bordered">
-                       <thead>
-                       <tr>
-                           <th scope="col">Part number</th>
-                           <th scope="col">Title</th>
-                           <th scope="col">Price</th>
-                           <th scope="col">Zalog</th>
-                           <th scope="col">RG</th>
-                           <th scope="col">Zakup</th>
-                       </tr>
-                       </thead>
-                       <tbody>
-                       <tr>
-                           <th scope="row">152207246532</th>
-                           <td>fraga auto</td>
-                           <td>228.65</td>
-                           <td>16</td>
-                           <td>1</td>
-                           <td>192.07</td>
-                       </tr>
-                       <tr>
-                           <th scope="row">69576082790</th>
-                           <td>undefined</td>
-                           <td>12427530354</td>
-                           <td>28.94</td>
-                           <td>1</td>
-                           <td>28.94</td>
-                       </tr>
-                       <tr>
-                           <th scope="row">52107147991</th>
-                           <td>no name </td>
-                           <td>386.02</td>
-                           <td>16</td>
-                           <td>1</td>
-                           <td>324.26</td>
-                       </tr>
-                       </tbody>
-                   </table>
-                   ------------------>
+
                     <div class="container">
                         @if(! empty($products)&& count($products)>0)
                         <table class="table table-bordered table-sm table-hover">
@@ -748,9 +720,7 @@
                             </thead>
                             <tbody>
 
-
-
-                           @foreach ($products as $product)
+              @foreach ($products as $product)
            <tr><td>  {{ $product->NUMBER }}</td>
                <td>  {{ $product->NUMBER2 }}</td>
                <td>  {{ $product->WEIGHT }}</td>
@@ -773,48 +743,46 @@
 
 
                 </div>
-               <div class="tab-pane fade" id="input1" role="tabpanel" aria-labelledby="input1-tab">
-                   <table class="table table-bordered">
-                       <thead>
-                       <tr>
-                           <th scope="col">A</th>
-                           <th scope="col">B</th>
-                           <th scope="col">C</th>
-                           <th scope="col">D</th>
-                           <th scope="col">E</th>
-                           <th scope="col">F</th>
-                       </tr>
-                       </thead>
-                       <tbody>
-                       <tr>
-                           <th scope="row">51457948739</th>
-                           <td>KRONENMUTTER</td>
-                           <td>53.86</td>
-                           <td>16</td>
-                           <td>1</td>
-                           <td>45.24</td>
-                       </tr>
-                       <tr>
-                           <th scope="row">26789009877665</th>
-                           <td>33321135135</td>
-                           <td>KREUZSCHLITZSCHRAU</td>
-                           <td>146.46</td>
-                           <td>1</td>
-                           <td>123.03</td>
-                       </tr>
-                       <tr>
-                           <th scope="row">82222162886</th>
-                           <td>MONTAGESATZ VISION
-                           </td>
-                           <td>230.25</td>
-                           <td>16</td>
-                           <td>1</td>
-                           <td>193.41</td>
-                       </tr>
-                       </tbody>
-                   </table>
+                <!----------------------------------------------------------------------------------------------------->
 
+
+
+
+               <div class="tab-pane fade" id="input1" role="tabpanel" aria-labelledby="input1-tab">
+                    <div class="row">
+                        <div class="col">
+                   @isset($pricedata)
+
+                       <table class="table table-bordered table-sm">
+                           <thead>
+                           <tr>
+                               @for ($i = 0; $i < count($pricedata[0]); $i++)
+                                   <th scope="col">{{ $letters[$i] }}</th>
+                               @endfor
+                           </tr>
+                           </thead>
+
+                           <tbody>
+                           @for ($i = 1; $i < $rownum; $i++)
+                               <tr>
+                                   @for ($y = 0; $y < count($pricedata[0]); $y++)
+                                       <td>{{$pricedata[$i][$y] }}</td>
+                                   @endfor
+                               </tr>
+                           @endfor
+                           </tbody>
+                       </table>
+                   @endisset
+                    </div>
+                    </div>
+
+                   @empty($pricedata)
+                       <h1 class="text-muted p-5">:) Новый прайс не загружен</h1>
+                   @endempty
                </div>
+
+
+              <!--------------------------------------------------------------------------------------------------------->
 
            </div>
   </div>
@@ -942,7 +910,7 @@
             $("#loadprice").attr("disabled", true);       // button disabled after 1 minute
         }, 1000);
       });
-
+// ---------------------------    Редактирование -> список изменений -> загрузить ---------------------------------//
         $("#uploadchanges").click(function(){              // Когда нажали кнопку Редактирование -> список изменений -> загрузить
             $("#pleaseWait2").css("visibility", "hidden"); // hide close sign
             $("#spinner2").css("visibility", "visible");   // show spinner
@@ -992,7 +960,58 @@
                 }
             });
         })
+// ---------------------------    Редактирование -> список добавлений -> загрузить ---------------------------------//
+        $("#uploadadditions").click(function(){              // Когда нажали кнопку Редактирование -> список добавлений -> загрузить
+            $("#pleaseWait3").css("visibility", "hidden"); // hide close sign
+            $("#spinner3").css("visibility", "visible");   // show spinner
+            setTimeout(function(){
+                $("#uploadadditions").attr("disabled", true);       // button disabled after 1 second
+            }, 1000);
+            setTimeout(function(){
+                $("#ModalAddRecords").modal('hide');
+            },3000);
+            blocked = 1;
+            if(blocked > 0) {
+                let  polzuncheck = setInterval(getMessage, 3000);
+                $("#progressbar").css("visibility","visible");
+                $("#polzunok").show();
+            }
+        });
 
+        $('#ModalAddRecords').on('shown.bs.modal', function () {    // "редактирование -> список добавлений" модальное окно
+            let $recordscount = Number($("#recordscount").text());
+            if ($recordscount == 0) {                                 // если записей в базе 0 то деактивируем кнопку, показываем сообщение
+           /*     $("#uploadadditions").attr("disabled", true);
+                $("#fileadditions").attr("disabled",true);
+                $('.toast').toast({delay: 5000});
+
+                $("#toasttitle").html("Ошибка. ");
+                $("#toastbody").html(" Записей не найдено");
+                $('.toast').toast('show');  */
+            }
+            if ($('#fileadditions').get(0).files.length === 0)    //  Поле выбора файла
+            {      // если не выбран файл для загрузки, деактивируем кнопку
+                console.log("не выбран файл для загрузки");
+                $("#uploadadditions").attr("disabled", true);
+            } else {
+                // если выбран файл для загрузки, активируем кнопку
+                console.log("выбран файл для загрузки");
+                $("#uploadadditions").attr("disabled", false);
+            }
+            $("#uploadadditionsform").change(function() {   // Если Форма "редактирование -> список добавлений" изменялась
+                // alert( "Handler for .change() called." );
+                if ($('#fileadditions').get(0).files.length === 0) //  Поле выбора файла
+                {                                   // если не выбран файл для загрузки, активируем кнопку
+                    console.log("не выбран файл для загрузки");
+                    $("#uploadadditions").attr("disabled", true);
+                } else {                            // если  выбран файл для загрузки, деактивируем кнопку
+                    console.log("выбран файл для загрузки");
+                    $("#uploadadditions").attr("disabled", false);
+                }
+            });
+        })
+
+// -----------------------------   Редактирование -> обновить запись   ---------------------------------------------------//
         $('#ModalRenewRecord').on('shown.bs.modal', function () {   // Редактирование обновить запись
 
             let $recordscount = Number($("#recordscount").text());
@@ -1111,11 +1130,25 @@
             $message = 1;
         }
 
-        if ($message) {
-            $('.toast').toast('show');
-          $message = 0;
+   if ($added > 0) {
+            $("#toasttitle").html("Успешно. ");
+            $("#toastbody").html(" Добавлено " +  $added +" записей");
+            $message = 1;
+                    }
+
+    if ($message != "") {
+            $("#toasttitle").html("Сообщение. ");
+            $("#toastbody").html("База данных занята.");
+            $message = 1;
         }
-        });
+
+        if ($message) { $('.toast').toast('show'); $message = 0; }
+
+
+
+
+    });
+
 
 
     //Check status of the table

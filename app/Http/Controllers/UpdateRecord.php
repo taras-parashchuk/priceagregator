@@ -63,13 +63,13 @@ class UpdateRecord extends Controller
           $database = Cache::get('database');
           $record = 0;
 
-        if (($blocked == null)&&($database == null)) {
-
+         if (($blocked == null)&&($database == null)) {
+    //      if (($blocked == null)) {
             //$block->status = 1;  //Ставимо блок на таблицю
             //$block->save();
-            $blocked = Cache::put($tableprice,"1");
-            Cache::put($tableprice."action","Updating");
-            Cache::put('database',1);
+            $blocked = Cache::put($tableprice,"1",300);
+            Cache::put($tableprice."action","Updating",300);
+            Cache::put('database',1,300);
 
             if ($brand == "VAG") {
                 $record = vagprice::where('NUMBER', $Number)->update(['NUMBER2' => $Number2, 'WEIGHT' => $Weight, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $Title, 'TEILEART' => $Teileart]);
@@ -114,6 +114,16 @@ class UpdateRecord extends Controller
         Cache::pull('database');
 
 
+        if ($record > 0) {
+            $status = "success";
+            $errors = 0;
+            $message = "record updated";
+                               } else {
+                                    $errors = 1;
+                                    $status ="error";
+                                    $message = "record fon found";
+                                }
+
         $logg = new log;
         $logg->brand  =  $brand;
         $logg->action =  'update';
@@ -123,7 +133,7 @@ class UpdateRecord extends Controller
         $logg->save();
 
 
-             if ($record > 0) { $errors = 0; } else { $errors = 1;}
+
          return back()->with(['updated'=> $record,'total'=>1,'refused'=>$errors,'errmsg'=>$errmsg,'message'=>$message ]);
                       }
 /************************************************************************************************************************************/
@@ -159,20 +169,16 @@ class UpdateRecord extends Controller
                   foreach ($records as $row) {
                       $csvarr[] = $row;
                   }
-                   // dd(count($csvarr));
+                 // dd(count($csvarr));
                  // $records = $reader->getContent();
 
                  // dd($content);
-                /**********************************************************************************/
+                 /**********************************************************************************/
+                 //$contents = Storage::get($storagepath);
+                 // $linesarr = explode("\r\n",$contents); //розбиваємо по рядках
+                 // unset($contents);
 
-
-
-
-                  //$contents = Storage::get($storagepath);
-                  // $linesarr = explode("\r\n",$contents); //розбиваємо по рядках
-                  // unset($contents);
-
-                // Формуєм масив з ряків csv
+                 // Формуєм масив з ряків csv
                   $i=0;
                   $updated = 0;
                   /*        тимчасова на час випробування leagueCSV
@@ -227,13 +233,13 @@ class UpdateRecord extends Controller
                   $success =array();
                   $message ="";
 
-                  if (($blocked == null)&&($database==null)) {
+                  if (($blocked == null)&&($database == null)) {
 
                       //$block->status = 1;  //Ставимо блок на таблицю
                       //$block->save();
-                      $blocked = Cache::put($tableprice,"1");
-                      Cache::put($tableprice."action","Updating");
-                      Cache::put('database',1);
+                      $blocked = Cache::put($tableprice,"1",300);
+                      Cache::put($tableprice."action","Updating",300);
+                      Cache::put('database',1,300);
                       $updated = 0;
                       $errors  = 0;
                       $i = 0;
@@ -244,8 +250,8 @@ class UpdateRecord extends Controller
                            $process = ($i/$totalrec)*100;
                            if (($process < 1)&&($process >0)) {$process = 1;}
 
-                          Cache::set($tableprice, $process);
-                          Cache::put($tableprice."action","Updating");
+                          Cache::put($tableprice, $process);
+                          Cache::put($tableprice."action","Updating",300);
 
                           if (isset($arr[0])) {$NUMBER = $arr[0]; } else { $NUMBER = " "; }
                           if (isset($arr[1])) {$NUMBER2 = $arr[1];} else { $NUMBER2 = " ";}
