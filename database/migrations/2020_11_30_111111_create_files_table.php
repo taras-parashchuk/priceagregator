@@ -17,7 +17,8 @@ class CreateFilesTable extends Migration
             $table->id();
             $table->timestamps();
 	    $table->string('originalname');	
-            $table->string('storagepath');	
+            $table->string('storagepath');
+	    $table->string('ftype');		
 	    $table->bigInteger('fsize'); 
 	    $table->string('mission'); 	
             $table->string('brand'); 

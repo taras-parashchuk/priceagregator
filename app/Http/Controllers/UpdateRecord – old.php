@@ -100,6 +100,7 @@ class UpdateRecord extends Controller
                     $inpfile->originalname = $originalname;
                     $inpfile->storagepath = $storagepath;
                     $inpfile->fsize = $fsize;
+                    $inpfile->fsize = $fsize;
                     $inpfile->mission = "update";
                     $inpfile->brand = $brand;
                     $inpfile->save();

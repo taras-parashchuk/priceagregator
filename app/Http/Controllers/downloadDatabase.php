@@ -41,10 +41,10 @@ class downloadDatabase extends Controller
         if ($brand == "TOYOTA")   {$tableprice = 'toyotaprices';  }
         if ($brand == "VOLVO")    {$tableprice = 'volvoprices' ;  }
 
-        $blocked = Cache::get($tableprice);
+        $blocked = Cache::store('database')->get($tableprice);
         if ($blocked == null) {
-            $blocked = Cache::put($tableprice,"1");
-            Cache::put($tableprice."action","Downloading");
+            $blocked = Cache::store('database')->put($tableprice,"1");
+            Cache::store('database')->put($tableprice."action","Downloading");
 
             $fname = "base-" . $brand . "-" . date("H:i:s Y-m-d") . ".csv";
             $filename = 'attachment; filename ="' . $fname . '"';
@@ -95,8 +95,8 @@ class downloadDatabase extends Controller
                 $records = suzukiprice::All('NUMBER', 'NUMBER2', 'WEIGHT', 'VPE', 'VIN', 'NL', 'TITLE', 'TEILEART')->toArray();
                 $csvcount = $csv->insertAll($records);
             }
-        Cache::pull($tableprice);
-        Cache::pull($tableprice."action");
+        Cache::store('database')->pull($tableprice);
+        Cache::store('database')->pull($tableprice."action");
         }
         return response((string) $csv, 200, [
             'Content-Type' => 'text/csv',

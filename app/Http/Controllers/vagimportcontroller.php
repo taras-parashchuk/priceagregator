@@ -109,7 +109,7 @@ class vagimportcontroller extends Controller
 
         $time2 = time();
         $diff=$time2-$time1;
-       dd($diff);
+        dd($diff);
      //   dd($res);
 
 /*

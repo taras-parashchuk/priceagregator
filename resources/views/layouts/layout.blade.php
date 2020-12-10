@@ -35,22 +35,66 @@
         }
  </style>
  <script>
+     let letters = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z" ,"AA","AB","AC","AD","AE","AF","AG","AH","AI","AJ","AK","AL","AM","AN","AO","AP","AQ","AR","AS","AT","AU","AV","AW","AX","AY","AZ"];
 
-    $changes = <?php  if (Session::get('updated'))  { $updated = Session::get('updated'); echo $updated.";";   } else { echo "0;"; }  ?>
-    $total   = <?php  if (Session::get('total'))    { $total   = Session::get('total');   echo $total.";";     } else { echo "0;"; }  ?>
-    $refused = <?php  if (Session::get('refused'))  { $refused = Session::get('refused'); echo $refused.";";   } else { echo "0;"; }  ?>
-    $deleted = <?php  if (Session::get('deleted'))  { $deleted = Session::get('deleted'); echo $deleted.";";   } else { echo "0;"; }  ?>
-    $brand   = <?php  if (Session::get('brand'))    { $brand   = Session::get('brand');   echo "'".$brand."';";} else { echo "0;"; }  ?>
-    $added   = <?php  if (Session::get('added'))    { $added   = Session::get('added');   echo "'".$added."';";} else { echo "0;"; }  ?>
-    $message   = <?php  if (Session::get('message')){ $message   = Session::get('message');echo "'".$message."';";} else { echo "0;"; }?>
+    $changes = <?php  if (Session::get('updated'))  { $updated = Session::get('updated'); echo $updated.";";     } else { echo "0;"; }  ?>
+    $total   = <?php  if (Session::get('total'))    { $total   = Session::get('total');   echo $total.";";       } else { echo "0;"; }  ?>
+    $refused = <?php  if (Session::get('refused'))  { $refused = Session::get('refused'); echo $refused.";";     } else { echo "0;"; }  ?>
+    $deleted = <?php  if (Session::get('deleted'))  { $deleted = Session::get('deleted'); echo $deleted.";";     } else { echo "0;"; }  ?>
+    $brand   = <?php  if (Session::get('brand'))    { $brand   = Session::get('brand');   echo "'".$brand."';";  } else { echo "0;"; }  ?>
+    $added   = <?php  if (Session::get('added'))    { $added   = Session::get('added');   echo "'".$added."';";  } else { echo "0;"; }  ?>
+    $message = <?php  if (Session::get('message'))  { $message = Session::get('message'); echo "'".$message."';";} else { echo "0;"; }  ?>
 
     $KIKO = {{Session::get('prcolnum')}}
 
 
     blocked = 0;
-    ticks = 0;
-    posticks = 0;
-    zeroticks = 0;
+   let ticks = 0;
+   let posticks = 0;
+   let zeroticks = 0;
+   let nullticks = 0;
+   let checknewprice = 0;
+   let currentprice =new Array();
+
+
+    function drawPriceTable()
+        {
+            $("#nonewprice").remove();
+
+            html ='<table class="table table-bordered table-sm"><thead><tr>';
+            for (i=0; i < currentprice[0].length; i++)
+            {
+                html = html + "<th scope=\"col\">" + letters[i]+"</th>";
+            }
+            html = html +"</thead>";
+
+           for (i = 0; i < currentprice.length; i++)
+           {
+               html = html +  "<tr>";
+               for(y = 0; y < currentprice[i].length; y++)
+                    {
+                        html = html +"<td>" + currentprice[i][y] +"</td>";
+                    }
+               html = html + "</tr>";
+           }
+           html = html + "</tbody> </table>";
+
+            $("#jsonresponse").html(html);
+
+            /*
+                <th scope="col">#</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">Handle</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+                </table>
+            */
+        }
+
     function getMessage() {
 
         $.ajax({
@@ -82,11 +126,63 @@
                     return 0;
                 }
             },
-            error: function (msg) {
+            error: function (data) {
                 console.log("AJAX error");
             }
         });
     }
+
+    function getSamplePrice() {
+
+        $.ajax({
+            type:'GET',
+            url:'/newprice',
+            data: {
+                "_token": $('meta[name="csrf-token"]').attr('content'),
+                "brand" : $brand
+                  },
+            dataType: "json",
+            success:function(data) {
+               // console.log(data.tableprice);
+               // console.log(data.pricearray);
+
+               if (data != 0)
+                        {
+
+                            console.log(" RESPONSE RECEIVED ");
+                            currentprice = data.pricearray;
+                            drawPriceTable();
+                            console.log(currentprice);
+                            clearInterval(checknewprice);
+                            console.log(" INTERVAL CLEARED ");
+                  }  else {
+
+                        nullticks++;
+                      if (nullticks > 5) {
+                       // Clear interval getSamplePrice
+                       nullticks = 0;
+                       console.log(" response is null for 5 times");
+                       console.log(" checknewprice  interval cleared ");
+                       clearInterval(checknewprice);
+                                         }
+                                }
+                                   },
+            error: function (data) {
+                 console.log("AJAX error, ... ");
+                //  Проверяем пока не появится
+                nullticks++;
+                if (nullticks > 5) {
+                    // Clear interval getSamplePrice
+                    nullticks = 0;
+                    console.log(" response is null for 5 times");
+                    console.log(" checknewprice  interval cleared ");
+                    clearInterval(checknewprice);
+                                    }
+                                  }
+        });
+      }
+
+
 
  </script>
 </head>
@@ -109,57 +205,57 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="/vag">VAG</a>
-
-                    <a class="dropdown-item" href="/volvo">VOLVO</a>
-                    <a class="dropdown-item" href="/toyota">TOYOTA</a>
-                    <a class="dropdown-item" href="/psa">GROUPE PSA</a>
-                    <a class="dropdown-item" href="/gm">GENERAL MOTORS</a>
                     <a class="dropdown-item" href="/bmw">BMV</a>
-                    <a class="dropdown-item" href="/fiat">FIAT</a>
+                    <a class="dropdown-item" href="/volvo">VOLVO</a>
+                    <!--  <a class="dropdown-item" href="/toyota">TOYOTA</a>
+                      <a class="dropdown-item" href="/psa">GROUPE PSA</a>
+                      <a class="dropdown-item" href="/gm">GENERAL MOTORS</a>
 
-                    <a class="dropdown-item" href="/daimler">DAIMLER</a>
-                    <a class="dropdown-item" href="/hyundai">HYUNDAI</a>
-                    <a class="dropdown-item" href="/mazda">MAZDA</a>
-                    <a class="dropdown-item" href="/suzuki">SUZUKI</a>
+                      <a class="dropdown-item" href="/fiat">FIAT</a>
 
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Новый прайс
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item"  data-toggle="modal"  data-target="#FileUpload1" href="#">Загрузить</a>
-                    <a class="dropdown-item"  data-toggle="modal" data-target="#ModalUploadDatabase" href="#">Обновить базу</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Редактирование
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#ModalRenewRecord">Обновить Запись</a>
-                    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#ModalRenewRecords">Список изменений</a>
-                    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#ModalAddRecords">Список дополнений</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Выгрузка
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Шаблон 1</a>
-                    <a class="dropdown-item" href="#">Шаблон 2</a>
-                    <a class="dropdown-item" href="#">Шаблон 3</a>
-                    <a class="dropdown-item" href="/dwbase">Выгрузить базу</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Настройки
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <!-----  data-toggle="modal"  data-target="#LogModal" --->
+                      <a class="dropdown-item" href="/daimler">DAIMLER</a>
+                      <a class="dropdown-item" href="/hyundai">HYUNDAI</a>
+                      <a class="dropdown-item" href="/mazda">MAZDA</a>
+                      <a class="dropdown-item" href="/suzuki">SUZUKI</a> -->
+
+                  </div>
+              </li>
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Новый прайс
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item"  data-toggle="modal"  data-target="#FileUpload1" href="#">Загрузить</a>
+                      <a class="dropdown-item"  data-toggle="modal" data-target="#ModalUpdateDatabase" href="#">Обновить базу</a>
+                  </div>
+              </li>
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Редактирование
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#ModalRenewRecord">Обновить Запись</a>
+                      <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#ModalRenewRecords">Список изменений</a>
+                      <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#ModalAddRecords">Список дополнений</a>
+                  </div>
+              </li>
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Выгрузка
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="#">Шаблон 1</a>
+                      <a class="dropdown-item" href="#">Шаблон 2</a>
+                      <a class="dropdown-item" href="#">Шаблон 3</a>
+                      <a class="dropdown-item" href="/dwbase">Выгрузить базу</a>
+                  </div>
+              </li>
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Настройки
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <!-----  data-toggle="modal"  data-target="#LogModal" --->
                     <a class="dropdown-item" href="/log">Просмотр лога</a>
                     <a class="dropdown-item" href="/files">Просмотр файлов</a>
                    </div>
@@ -229,17 +325,31 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('file.upload.post') }}" method="POST" id="uploadpriceform" enctype="multipart/form-data">
+                <p>Выберите тип файла</p>
+                <form action="/file-upload" method="POST" id="uploadpriceform" enctype="multipart/form-data">
+                    @csrf
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio"  name="ftype" id="csv"  value="CSV" checked>
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            CSV
+                        </label>
+                    </div>
+                    <div class="form-check pb-3">
+                        <input class="form-check-input" type="radio"  name="ftype" id="txt" value="TXT">
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            TXT
+                        </label>
+                    </div>
                     <div class="form-group">
                         <div>
-                            @csrf
+
                             <input type="file" name="file" id="uploadpricefile">
                         </div>
 
                     </div>
 
                     <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" id="loadprice" >
+                    <button type="button" class="btn btn-primary" id="loadprice" >
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner1"></span>
                         Загрузить
                     </button>
@@ -358,87 +468,169 @@
     </div>
 </div>
 
-<!-----------------------------------   Новый прайс -> Обновить базу ---------------------------------------------->
-
-<div class="modal fade" id="ModalUploadDatabase" tabindex="-1" role="dialog" aria-labelledby="ModalUploadDatabase" aria-hidden="true">
-    <div class="modal-dialog " role="document">
+<!--------------------------------------------- Новый прайс -> обновить базу -------------------------------------------->
+<div class="modal fade" id="ModalUpdateDatabase" tabindex="-1" role="dialog" aria-labelledby="ModalUpdateDatabase" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ModalUploadDatabaseLabel">Обновление записи в базе {{ Session::get('brand') }}</h5>
+                <h5 class="modal-title" id="ModalUpdateDatabaseLabel">Обновление базы {{ Session::get('brand') }} из прайса</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <!--    Number	Number2	Weight	VPE	VIN	NL	Title	Teileart -->
-                <form method="POST" action="/update">
+                <form method="POST" action="/updatenp">
                     @csrf
-                    <div class="row">
-                        <div class="col mr-5">
-                            <div class="row text-right">
-                                <div class="col">
-                                    Number:
-                                </div>
-                                <div class="col ">
-                                    <input type="text" class="form-control mb-2" id="Number" name="Number" placeholder="Number">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col text-right">
-                                    Number2:
-                                </div>
-                                <div class="col text-right">
-                                    <input type="text" class="form-control mb-2" id="Number2" name="Number2" placeholder="Number2">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col text-right">
-                                    Weight:
-                                </div>
-                                <div class="col text-right">
-                                    <input type="text" class="form-control mb-2" id="Weight" name="Weight" placeholder="Weight">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col text-right">
-                                    VPE:
-                                </div>
-                                <div class="col text-right">
-                                    <input type="text" class="form-control mb-2" id="VPE" name="VPE" placeholder="VPE">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col text-right">
-                                    VIN:
-                                </div>
-                                <div class="col text-right">
-                                    <input type="text" class="form-control mb-2" id="VIN" name="VIN" placeholder="VIN">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col text-right">
-                                    NL:
-                                </div>
-                                <div class="col text-right">
-                                    <input type="text" class="form-control mb-2" id="NL" name="NL" placeholder="NL">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col text-right">
-                                    Title:
-                                </div>
-                                <div class="col">
-                                    <input type="text" class="form-control mb-2" id="Title" name="Title" placeholder="Title">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col text-right">
-                                    Teileart:
-                                </div>
-                                <div class="col">
-                                    <input type="text" class="form-control mb-2" id="Teileart" name="Teileart" placeholder="Teileart">
-                                </div>
-                            </div>
+                    <div class="row pb-5">
+                        <div class="col">
+                            Выберите столбцы в прайслисте соответствующие полям в базе NUMBER и TITLE.<br>
+                            Если поле TITLE в прайсе соответствует полю TITLE в базе, значение не изменяется.<br>
+
+                        </div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col">
+                            <b>Прайс</b>
+                        </div>
+
+                        <div class="col">
+
+                            <select class="custom-select" name="NUMBER">
+                                <option value="0" selected>A</option>
+                                <option value="1">B</option>
+                                <option value="2">C</option>
+                                <option value="3">D</option>
+                                <option value="4">E</option>
+                                <option value="5">F</option>
+                                <option value="6">G</option>
+                                <option value="7">H</option>
+                                <option value="8">I</option>
+                                <option value="9">J</option>
+                                <option value="10">K</option>
+                                <option value="11">L</option>
+                                <option value="12">M</option>
+                                <option value="13">N</option>
+                                <option value="14">O</option>
+                                <option value="15">P</option>
+                                <option value="16">Q</option>
+                                <option value="17">R</option>
+                                <option value="18">S</option>
+                                <option value="19">T</option>
+                                <option value="20">U</option>
+                                <option value="21">V</option>
+                                <option value="22">W</option>
+                                <option value="23">X</option>
+                                <option value="24">Y</option>
+                                <option value="25">Z</option>
+                                <option value="26">AA</option>
+                                <option value="27">AB</option>
+                                <option value="28">AC</option>
+                                <option value="29">AD</option>
+                                <option value="30">AE</option>
+                                <option value="31">AF</option>
+                                <option value="32">AG</option>
+                                <option value="33">AH</option>
+                                <option value="34">AI</option>
+                                <option value="35">AJ</option>
+                                <option value="36">AK</option>
+                                <option value="37">AL</option>
+                                <option value="38">AM</option>
+                                <option value="39">AN</option>
+                                <option value="40">AO</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <p class="text-muted text-center">x</p>
+                        </div>
+                        <div class="col">
+                            <p class="text-muted text-center">x</p>
+                        </div>
+                        <div class="col">
+                            <p class="text-muted text-center">x</p>
+                        </div>
+                        <div class="col">
+                            <p class="text-muted text-center">x</p>
+                        </div>
+                        <div class="col">
+                            <p class="text-muted text-center">x</p>
+                        </div>
+                        <div class="col">
+                            <select class="custom-select" name="TITLE">
+                                <option value="0" selected>A</option>
+                                <option value="1">B</option>
+                                <option value="2">C</option>
+                                <option value="3">D</option>
+                                <option value="4">E</option>
+                                <option value="5">F</option>
+                                <option value="6">G</option>
+                                <option value="7">H</option>
+                                <option value="8">I</option>
+                                <option value="9">J</option>
+                                <option value="10">K</option>
+                                <option value="11">L</option>
+                                <option value="12">M</option>
+                                <option value="13">N</option>
+                                <option value="14">O</option>
+                                <option value="15">P</option>
+                                <option value="16">Q</option>
+                                <option value="17">R</option>
+                                <option value="18">S</option>
+                                <option value="19">T</option>
+                                <option value="20">U</option>
+                                <option value="21">V</option>
+                                <option value="22">W</option>
+                                <option value="23">X</option>
+                                <option value="24">Y</option>
+                                <option value="25">Z</option>
+                                <option value="26">AA</option>
+                                <option value="27">AB</option>
+                                <option value="28">AC</option>
+                                <option value="29">AD</option>
+                                <option value="30">AE</option>
+                                <option value="31">AF</option>
+                                <option value="32">AG</option>
+                                <option value="33">AH</option>
+                                <option value="34">AI</option>
+                                <option value="35">AJ</option>
+                                <option value="36">AK</option>
+                                <option value="37">AL</option>
+                                <option value="38">AM</option>
+                                <option value="39">AN</option>
+                                <option value="40">AO</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <p class="text-muted text-center">x</p>
+                        </div>
+                    </div>
+                    <div class="row  mb-4">
+                        <div class="col">
+                            <b>База</b>
+                        </div>
+                        <div class="col">
+                            Number
+                        </div>
+                        <div class="col">
+                            Number2
+                        </div>
+                        <div class="col">
+                            Weight
+                        </div>
+                        <div class="col">
+                            VPE
+                        </div>
+                        <div class="col">
+                            VIN
+                        </div>
+                        <div class="col">
+                            NL
+                        </div>
+                        <div class="col">
+                            Title
+                        </div>
+                        <div class="col">
+                            Teileart
                         </div>
                     </div>
                     <div class="row justify-content-end ">
@@ -452,6 +644,8 @@
         </div>
     </div>
 </div>
+
+
 <!------------------------------------------ Редактирование / Список изменений ------------------------------------------->
 
 <div class="modal fade " id="ModalRenewRecords" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="ModalRenewRecords" aria-hidden="true">
@@ -692,10 +886,10 @@
     <div class="col">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link active" id="input2-tab" data-toggle="tab" href="#input2" role="tab" aria-controls="input2" aria-selected="true">Вход 2</a>
+                    <a class="nav-link active" id="input2-tab" data-toggle="tab" href="#input2" role="tab" aria-controls="input2" aria-selected="true">База</a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="input1-tab" data-toggle="tab" href="#input1" role="tab" aria-controls="input1" aria-selected="false">Вход 1</a>
+                    <a class="nav-link" id="input1-tab" data-toggle="tab" href="#input1" role="tab" aria-controls="input1" aria-selected="false">Прайс</a>
                 </li>
 
             </ul>
@@ -745,9 +939,6 @@
                 </div>
                 <!----------------------------------------------------------------------------------------------------->
 
-
-
-
                <div class="tab-pane fade" id="input1" role="tabpanel" aria-labelledby="input1-tab">
                     <div class="row">
                         <div class="col">
@@ -777,7 +968,11 @@
                     </div>
 
                    @empty($pricedata)
-                       <h1 class="text-muted p-5">:) Новый прайс не загружен</h1>
+
+                       <h1 class="text-muted p-5" id="nonewprice">:) Новый прайс не загружен</h1>
+                       <div id="jsonresponse">
+
+                       </div>
                    @endempty
                </div>
 
@@ -902,14 +1097,101 @@
                  })
 
 
-            $("#loadprice").click(function(){                     // Если нажали кнопку загрузить прайс
-                                                          // Деактивируем кнопку, показываем спиннер
+        $("#loadprice").click(function(){             // Если нажали кнопку загрузить прайс
+            // Деактивируем кнопку, показываем спиннер
             $("#pleaseWait").css("visibility", "hidden"); // hide close sign
             $("#spinner1").css("visibility", "visible");  // show spinner
             setTimeout(function(){
-            $("#loadprice").attr("disabled", true);       // button disabled after 1 minute
-        }, 1000);
-      });
+                $("#loadprice").attr("disabled", true);       // button disabled after 1 sec
+            }, 1000);
+            setTimeout(function(){
+                $("#FileUpload1").modal('hide');
+            },1000);
+            //Show progress bar
+            $("#progressbar").css("visibility","visible");
+            $("#polzunok").show();
+
+            //Ajax load file  ****************************************************************
+
+            let formData = new FormData();
+            formData.append('file',  $('#uploadpricefile').get(0).files[0]);
+            formData.append('ftype', $('input[name=ftype]:checked', '#uploadpriceform').val());
+
+
+            console.log("");
+            //$('input[name=ftype]:checked', '#uploadpriceform').val();
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type:'POST',
+                url: "/file-upload",
+                //  headers: {"_token": $('meta[name="csrf-token"]').attr('content')},
+
+                data: formData,
+                //data: $("#FileUpload1").serialize(),
+               // dataType: "json",
+                mimeType: "multipart/form-data",
+                cache:false,
+                contentType: false,
+                processData: false,
+                xhr: function(){
+                    var xhr = $.ajaxSettings.xhr(); // получаем объект XMLHttpRequest
+                    xhr.upload.addEventListener('progress', function(evt){ // добавляем обработчик события progress (onprogress)
+                        if(evt.lengthComputable) { // если известно количество байт
+                            // высчитываем процент загруженного
+                            let percentComplete = Math.ceil(evt.loaded / evt.total * 100);
+                            console.log(percentComplete);
+                            // устанавливаем значение в атрибут value тега <progress>
+                            // и это же значение альтернативным текстом для браузеров, не поддерживающих <progress>
+                            //progressBar.val(percentComplete).text('Загружено ' + percentComplete + '%');
+                            $("#polzunok").attr("style","width:"+ percentComplete +"%");
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function(xhr){
+                    // this.reset();
+                    console.log('File has been uploaded successfully');
+
+                    // jsonData = JSON.parse(xhr.responseText);
+                    //console.log(xhr.responseType);
+                    //  $("#jsonresponse").html(xhr.result);
+                    //let returnedData = JSON.parse(xhr.result);
+                    //        console.log(xhr.result);
+                    $("#progressbar").css("visibility","hidden");
+                    $("#polzunok").hide();
+                    $("#polzunok").attr("style","width:0%");
+
+                    // Вытаскивает табличку из кеша функцией
+                    // Периодически проверяем наличие таблички в Кеше
+                    console.log('Checking cache for new sample price');
+                    // getSamplePrice
+
+                    checknewprice = setInterval(getSamplePrice, 3000);
+                    console.log("Start checking new price");
+                    getSamplePrice();
+                    //getSamplePrice();
+                },
+                error: function(request, status, error){
+                 //   console.log(xhr.responseText);
+                    var statusCode = request.status;
+                    alert(statusCode);
+                    $("#progressbar").css("visibility","hidden");
+                    $("#polzunok").hide();
+                    $("#polzunok").attr("style","width:0%");
+                }
+            });
+
+
+
+
+
+        });
+
 // ---------------------------    Редактирование -> список изменений -> загрузить ---------------------------------//
         $("#uploadchanges").click(function(){              // Когда нажали кнопку Редактирование -> список изменений -> загрузить
             $("#pleaseWait2").css("visibility", "hidden"); // hide close sign
@@ -925,8 +1207,8 @@
               let  polzuncheck = setInterval(getMessage, 3000);
                     $("#progressbar").css("visibility","visible");
                     $("#polzunok").show();
-                           }
-      });
+                                }
+               });
 
         $('#ModalRenewRecords').on('shown.bs.modal', function () {    // "редактирование -> список изменений" модальное окно
             let $recordscount = Number($("#recordscount").text());

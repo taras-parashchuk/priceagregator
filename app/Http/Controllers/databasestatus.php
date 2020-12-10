@@ -27,8 +27,36 @@ class databasestatus extends Controller
         $status  = Cache::get($tableprice."action");
         if ($status == null) { $status = "";}
 
-
-
         return response()->json(array('blocked'=> $blocked,'status'=>$status), 200);
     }
+
+    public function price(Request $request) {
+
+        $brand = $request->input('brand');
+
+        if ($brand == "VAG")     {$tableprice = 'vagprices';     }
+        if ($brand == "BMW")     {$tableprice = 'bmwprices';     }
+        if ($brand == "DAIMLER") {$tableprice= 'daimlerprices';  }
+        if ($brand == "FIAT")    {$tableprice = 'fiatprices';    }
+        if ($brand == "GM")      {$tableprice = 'gmprices';      }
+        if ($brand == "HYUNDAI") {$tableprice = 'hyundaiprices'; }
+        if ($brand == "MAZDA")   {$tableprice = 'mazdaprices';   }
+        if ($brand == "PSA")     {$tableprice = 'psaprices';     }
+        if ($brand == "SUZUKI")  {$tableprice = 'suzukiprices';  }
+        if ($brand == "TOYOTA")  {$tableprice = 'toyotaprices';  }
+        if ($brand == "VOLVO")   {$tableprice = 'volvoprices' ;  }
+
+        $pricearray = Cache::store('database')->get($tableprice."price");
+
+        if (count($pricearray) == 0 )
+                    {
+                        return response()->json(0);
+                    } else {
+
+            return response()->json(['tableprice' => $tableprice, 'pricearray' => $pricearray]);
+                           }
+
+    }
+
 }
+

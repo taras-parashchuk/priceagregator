@@ -46,6 +46,7 @@ class addrecords extends Controller
             $inpfile->originalname = $originalname;
             $inpfile->storagepath = $storagepath;
             $inpfile->fsize = $fsize;
+            $inpfile->ftype = "csv";
             $inpfile->mission = "additions";
             $inpfile->brand = $brand;
             $inpfile->save();
@@ -123,8 +124,8 @@ class addrecords extends Controller
             // Блокуємо таблиці
             //$block = table::find($tableprice);
             //$blocked = $block->status;
-            $blocked = Cache::get($tableprice);
-            $database = Cache::get('database');
+            $blocked = Cache::store('database')->get($tableprice);
+            $database = Cache::store('database')->get('database');
             $errmsg = array();
             $success =array();
             $message ="";
@@ -133,9 +134,9 @@ class addrecords extends Controller
 
                 //$block->status = 1;  //Ставимо блок на таблицю
                 //$block->save();
-                $blocked = Cache::put($tableprice,"1",300);
-                Cache::put($tableprice."action","Adding records",300);
-                Cache::put('database',1,300);
+                $blocked = Cache::store('database')->put($tableprice,"1",300);
+                Cache::store('database')->put($tableprice."action","Adding records",300);
+                Cache::store('database')->put('database',1,300);
                 $updated = 0;
                 $errors  = 0;
                 $i = 0;
@@ -147,8 +148,8 @@ class addrecords extends Controller
                     $process = ($i/$totalrec)*100;
                     if (($process < 1)&&($process >0)) {$process = 1;}
 
-                    Cache::put($tableprice, $process,300);
-                    Cache::put($tableprice."action","Adding records",300);
+                    Cache::store('database')->put($tableprice, $process,300);
+                    Cache::store('database')->put($tableprice."action","Adding records",300);
 
                     if (isset($arr[0])) {$NUMBER = $arr[0]; } else { $NUMBER = " "; }
                     if (isset($arr[1])) {$NUMBER2 = $arr[1];} else { $NUMBER2 = " ";}
@@ -221,9 +222,9 @@ class addrecords extends Controller
 
                 }  //End foreach
 
-                Cache::pull($tableprice);
-                Cache::pull($tableprice."action");
-                Cache::pull('database');
+                Cache::store('database')->pull($tableprice);
+                Cache::store('database')->pull($tableprice."action");
+                Cache::store('database')->pull('database');
 
             } else { $errmsg[]="Table ".$tableprice." is busy"; $refused=$totalrec;
                 $message ="Database is busy.";}

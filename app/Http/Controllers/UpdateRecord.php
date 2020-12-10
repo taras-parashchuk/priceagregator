@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use League\Csv\Reader;
 //use Request;
+use League\Csv\Statement;
 USE Session;
 USE DB;
 use League\Csv\Exception;
@@ -59,17 +60,17 @@ class UpdateRecord extends Controller
         // Блокуємо таблиці
           //$block = table::find($tableprice);
           //$blocked = $block->status;
-          $blocked  = Cache::get($tableprice);
-          $database = Cache::get('database');
+          $blocked  = Cache::store('database')->get($tableprice);
+          $database = Cache::store('database')->get('database');
           $record = 0;
 
          if (($blocked == null)&&($database == null)) {
     //      if (($blocked == null)) {
             //$block->status = 1;  //Ставимо блок на таблицю
             //$block->save();
-            $blocked = Cache::put($tableprice,"1",300);
-            Cache::put($tableprice."action","Updating",300);
-            Cache::put('database',1,300);
+            $blocked = Cache::store('database')->put($tableprice,"1",300);
+            Cache::store('database')->put($tableprice."action","Updating",300);
+            Cache::store('database')->put('database',1,300);
 
             if ($brand == "VAG") {
                 $record = vagprice::where('NUMBER', $Number)->update(['NUMBER2' => $Number2, 'WEIGHT' => $Weight, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $Title, 'TEILEART' => $Teileart]);
@@ -109,9 +110,9 @@ class UpdateRecord extends Controller
 
         //$block->status = 0;  // Знімаємо блок з таблиці
         //$block->save();
-          $blocked = Cache::pull($tableprice);
-        Cache::pull($tableprice."action");
-        Cache::pull('database');
+          $blocked = Cache::store('database')->pull($tableprice);
+        Cache::store('database')->pull($tableprice."action");
+        Cache::store('database')->pull('database');
 
 
         if ($record > 0) {
@@ -155,6 +156,7 @@ class UpdateRecord extends Controller
                     $inpfile->originalname = $originalname;
                     $inpfile->storagepath = $storagepath;
                     $inpfile->fsize = $fsize;
+                    $inpfile->ftype = "csv";
                     $inpfile->mission = "update";
                     $inpfile->brand = $brand;
                     $inpfile->save();
@@ -227,8 +229,8 @@ class UpdateRecord extends Controller
                     // Блокуємо таблиці
                   //$block = table::find($tableprice);
                   //$blocked = $block->status;
-                  $blocked = Cache::get($tableprice);
-                  $database = Cache::get('database');
+                  $blocked = Cache::store('database')->get($tableprice);
+                  $database = Cache::store('database')->get('database');
                   $errmsg = array();
                   $success =array();
                   $message ="";
@@ -237,9 +239,9 @@ class UpdateRecord extends Controller
 
                       //$block->status = 1;  //Ставимо блок на таблицю
                       //$block->save();
-                      $blocked = Cache::put($tableprice,"1",300);
-                      Cache::put($tableprice."action","Updating",300);
-                      Cache::put('database',1,300);
+                      $blocked = Cache::store('database')->put($tableprice,"1",300);
+                      Cache::store('database')->put($tableprice."action","Updating",300);
+                      Cache::store('database')->put('database',1,300);
                       $updated = 0;
                       $errors  = 0;
                       $i = 0;
@@ -250,8 +252,8 @@ class UpdateRecord extends Controller
                            $process = ($i/$totalrec)*100;
                            if (($process < 1)&&($process >0)) {$process = 1;}
 
-                          Cache::put($tableprice, $process);
-                          Cache::put($tableprice."action","Updating",300);
+                          Cache::store('database')->put($tableprice, $process);
+                          Cache::store('database')->put($tableprice."action","Updating",300);
 
                           if (isset($arr[0])) {$NUMBER = $arr[0]; } else { $NUMBER = " "; }
                           if (isset($arr[1])) {$NUMBER2 = $arr[1];} else { $NUMBER2 = " ";}
@@ -368,9 +370,9 @@ class UpdateRecord extends Controller
 
                       }  //End foreach
 
-                      Cache::pull($tableprice);
-                      Cache::pull($tableprice."action");
-                      Cache::pull('database');
+                      Cache::store('database')->pull($tableprice);
+                      Cache::store('database')->pull($tableprice."action");
+                      Cache::store('database')->pull('database');
 
                   } else { $errmsg[]="Table ".$tableprice." is busy"; $refused=$totalrec;
                     $message ="Database is busy.";}
@@ -402,6 +404,59 @@ class UpdateRecord extends Controller
 
               return back()->with(['updated'=> $updated,'total'=> $totalrec,'refused'=> $refused,'errmsg'=>$errmsg,'message'=>$message ]);
           }
+
+
+            public function updatenp(Request $request)
+                {
+                   // File::latest()->first();
+                      $brand = Session::get('brand');
+
+
+                     // dd("NUMBER: ".$NumberCell." TITLE: ".$TitleCell);
+
+                      $pricefile = File::where('brand',$brand)->latest()->first();
+
+
+                      if ($pricefile !=null)
+                            {
+                                $storagepath = $pricefile->storagepath;
+                                $ftype = $pricefile->ftype;
+                                dd($ftype);
+                                $contents = Storage::get($storagepath);
+
+                                if ($ftype == "csv")
+                                          {
+                              $NumberCell = $request->input('NUMBER');
+
+                              $TitleCell = $request->input('TITLE');
+                                   // Find
+                             $reader = Reader::createFromString($contents);
+                             $reader->setDelimiter(';');
+                             $records = Statement::create()->process($reader);
+
+                             $connt = count($records);
+                             $firstrow[0] = $records->fetchOne(0);
+                             $colscount = count($firstrow[0]);
+
+                             foreach ($records as $record)
+                                                {
+                                  //  records
+ //$record = vagprice::where('NUMBER', $Number)->update(['NUMBER2' => $Number2, 'WEIGHT' => $Weight, 'VPE' => $VPE, 'VIN' => $VIN, 'NL' => $NL, 'TITLE' => $Title, 'TEILEART' => $Teileart]);
+                                dd($record);
+                                                }
+
+
+                                          }
+
+                                if (($ftype == "txt") && ($brand=="BMW"))
+                                                {
+
+                                                }
+                            } else
+                                {
+                                    dd("No file");
+                                }
+                }
 
 
 }

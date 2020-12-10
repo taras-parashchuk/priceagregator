@@ -57,6 +57,7 @@ Route::get('/suzuki', 'suzuki@viewtwenty');
 Route::get('/bmwimp','bmwimportcontroller@import');
 
 //Route::get('/vagimp','vagimportcontroller@fileUploadPost');
+
 Route::get('/vagimp','vagimportcontroller@import');
 
 Route::post('/delinput','delInputFile@index');
@@ -68,11 +69,13 @@ Route::get('/files',   'fileview@index');
 Route::get('/clearlog','logview@clear');
 
 Route::get('/status','databasestatus@index');
+Route::get('/newprice','databasestatus@price');
 
 
 Route::post('/update','UpdateRecord@update');
+Route::post('/updatenp','UpdateRecord@updatenp');
 Route::post('/updates','UpdateRecord@updatemany');
 Route::post( '/additions','addrecords@index');
 
-Route::post('file-upload', 'UploadFileController@fileUploadPost')->name('file.upload.post');
+Route::post('/file-upload', 'UploadFileController@fileUploadPost')->name('file.upload.post');
 Route::get('/getnumber','programming@index');
